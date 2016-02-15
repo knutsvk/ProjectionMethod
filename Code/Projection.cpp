@@ -6,10 +6,10 @@ int main(void)
     
     double Re = 100.0;      // Reynolds number
     double a = 1.0;         // Velocity of lid
-    double tau = 1.0;       // End time
+    double tau = 1.0;       // End time TODO: run until steady?
     double dx = 1.0/N;      // Grid spacing
     double t = 0.0;         // Time counter
-    double dt = dx/10.0;    // Time step
+    double dt = dx/10.0;    // Time step TODO: check stability
 
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
@@ -20,13 +20,12 @@ int main(void)
     VectorXd U = VectorXd::Zero(N*(N-1));
     VectorXd V = VectorXd::Zero(N*(N-1));
 
+    // TODO: Make the matrices sparse
     // Build matrix for velocity equations
     MatrixXd Au = buildVelocityMatrix(N, dt, Re);
-    cout << "Au = " << endl << Au << endl; 
 
     // Build matrix for pressure equations
     MatrixXd Ap = buildPressureMatrix(N); 
-    cout << "Ap = " << endl << Ap << endl; 
     
 
     while(t<tau)
@@ -47,4 +46,6 @@ int main(void)
         
         t += dt;
     }
+
+    // Print results (remember ghost points!) to file
 }
