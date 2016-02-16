@@ -78,4 +78,162 @@ MatrixXd buildPressureMatrix(int N)
     return A;
 }
 
+void updateLoadU(VectorXd u, VectorXd v, int N, double dt, 
+        double a, double Re, VectorXd &f_U)
+{
+    /* Update the load vector used in the equation for the 
+     * intermediate x-velocity. The stencil is such that each
+     * point requires information from its own velocity from 
+     * North, East, South and West, and from the y-velocity
+     * from NorthEast, SouthEast, SouthWest and NorthWest. 
+     * Boundary conditions from viscous term are included. */
+
+    // CFL-related constant
+    double alpha = 0.25*dt*N; 
+
+    // Viscosity-related constant
+    double beta = dt/Re; 
+
+    // For clarity, initiate doubles for each relevant point
+    double u_0, u_N, u_E, u_S, u_W, v_NE, v_SE, v_SW, v_NW;
+    
+    for(int i=0; i<N-1; i++)
+    {
+        for(int j=0; j<N; j++)
+        {
+            // Point to be evaluated 
+            u_0 = u[i*N+j];
+
+            // x-velocities are zero if on left border
+            if(i==0) u_W = 0.0;
+            else u_W = u[(i-1)*N+j];
+
+            // x-velocities are zero if on left border
+            if(i==N-2) u_E = 0.0;
+            else u_E = u[(i+1)*N+j];
+
+            // y-velocities are zero if on south border
+            // x-velocities from no-slip condition
+            if(j==0)
+            {
+                u_S = -u_0;
+                v_SE = 0.0;
+                v_SW = 0.0;
+            }
+            else
+            {
+                u_S = u[i*N+(j-1)];
+                v_SE = v[(j-1)*N+(i+1)];
+                v_SW = v[(j-1)*N+i];
+            }
+
+            // y-velocities are zero if on north border
+            // x-velocities from no-slip condition
+            if(j==N-1)
+            { 
+                u_N = 2.0*a-u_0; 
+                v_NE = 0.0;
+                v_NW = 0.0;
+            }
+            else 
+            {
+                u_N = u[i*N+(j+1)];
+                v_NE = v[j*N+(i+1)];
+                v_NW = v[j*N+i];
+            }
+          
+            // compute load vector
+            f_U[i*N+j] = u_0-alpha*(pow(u_E+u_0,2)
+                    -pow(u_W+u_0,2)+(u_N+u_0)*(v_NE+v_NW)
+                    -(u_0+u_S)*(v_SW+v_SE));
+            
+            // add BCs from viscosiy term as appropriate
+            // if on north or south boundary
+            if(j==0)
+                f_U[i*N] += beta*u_S;
+            if(j==N-1)
+                f_U[(i+1)*N-1] += beta*u_N;
+
+        }
+    }
+}
+
+void updateLoadV(VectorXd u, VectorXd v, int N, double dt, 
+        double a, double Re, VectorXd &f_V)
+{
+    /* Update the load vector used in the equation for the 
+     * intermediate y-velocity. The stencil is such that each
+     * point requires information from its own velocity from 
+     * North, East, South and West, and from the x-velocity
+     * from NorthEast, SouthEast, SouthWest and NorthWest. 
+     * Boundary conditions from viscous term are included. */
+
+    // CFL-related constant
+    double alpha = 0.25*dt*N; 
+
+    // Viscosity-related constant
+    double beta = dt/Re; 
+
+    // For clarity, initiate doubles for each relevant point
+    double v_0, v_N, v_E, v_S, v_W, u_NE, u_SE, u_SW, u_NW;
+    
+    for(int i=0; i<N-1; i++)
+    {
+        for(int j=0; j<N; j++)
+        {
+            // Point to be evaluated 
+            v_0 = u[i*N+j];
+
+            // y-velocities are zero if on south border
+            if(i==0) v_S = 0.0;
+            else v_S = v[(i-1)*N+j];
+
+            // y-velocities are zero if on north border
+            if(i==N-2) v_N = 0.0;
+            else v_N = v[(i+1)*N+j];
+
+            // x-velocities are zero if on west border
+            // y-velocities from no-slip condition
+            if(j==0)
+            {
+                v_W = -v_0;
+                u_NW = 0.0;
+                u_SW = 0.0;
+            }
+            else
+            {
+                v_W = v[i*N+(j-1)];
+                u_NW = v[(j-1)*N+(i+1)];
+                u_SW = v[(j-1)*N+i];
+            }
+
+            // x-velocities are zero if on east border
+            // y-velocities from no-slip condition
+            if(j==N-1)
+            { 
+                v_E = -v_0; 
+                u_NE = 0.0;
+                u_SE = 0.0;
+            }
+            else 
+            {
+                v_E = u[i*N+(j+1)];
+                u_NE = v[j*N+(i+1)];
+                u_SE = v[j*N+i];
+            }
+          
+            // compute load vector
+            f_V[i*N+j] = v_0-alpha*(pow(v_N+v_0,2)
+                    -pow(v_S+v_0,2)+(v_E+v_0)*(u_NE+u_SE)
+                    -(v_0+v_W)*(u_SW+u_NW));
+            
+            // add BCs from viscosiy term as appropriate
+            // if on east or west boundary
+            if(j==0)
+                f_V[i*N] += beta*v_W;
+            if(j==N-1)
+                f_V[(i+1)*N-1] += beta*v_E;
+        }
+    }
+}
 #endif
