@@ -14,7 +14,7 @@ int main(void)
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
     VectorXd v = VectorXd::Zero(N*(N-1));
-    VectorXd p = VectorXd::Zero(N*N);
+    VectorXd p = VectorXd::Ones(N*N);
 
     // Initiate intermediate velocity vectors
     VectorXd U = VectorXd::Zero(N*(N-1));
