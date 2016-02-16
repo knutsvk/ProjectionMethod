@@ -28,6 +28,7 @@ int main(void)
     // TODO: Make the matrices sparse
     // Build matrix for velocity equations
     MatrixXd A_UV = buildVelocityMatrix(N, dt, Re);
+    ColPivHouseholderQR<MatrixXd> QR_UV;
     cout << "A_UV = " << endl << A_UV << endl; 
 
     // Build matrix for pressure equations
@@ -44,6 +45,8 @@ int main(void)
         cout << "f_U = " << endl << f_U << endl; 
 
         // Solve Au * U = bu
+        U = QR_UV.solve(f_U);
+        cout << "U = " << endl << U << endl; 
         
         // Repeat the above for y-velocity
         updateLoadV(u, v, N, dt, a, Re, f_V);
