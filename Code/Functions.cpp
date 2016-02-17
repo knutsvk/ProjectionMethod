@@ -203,8 +203,8 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
             else
             {
                 v_W = v[i*N+(j-1)];
-                u_NW = v[(j-1)*N+(i+1)];
-                u_SW = v[(j-1)*N+i];
+                u_NW = u[(j-1)*N+(i+1)];
+                u_SW = u[(j-1)*N+i];
             }
 
             // x-velocities are zero if on east border
@@ -217,9 +217,9 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
             }
             else 
             {
-                v_E = u[i*N+(j+1)];
-                u_NE = v[j*N+(i+1)];
-                u_SE = v[j*N+i];
+                v_E = v[i*N+(j+1)];
+                u_NE = u[j*N+(i+1)];
+                u_SE = u[j*N+i];
             }
           
             // compute load vector
@@ -230,46 +230,47 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
             // add BCs from viscosiy term as appropriate
             // if on east or west boundary
             if(j==0)
-                f_V[i*N] += beta*v_W;
+                f_V[i*N+j] += beta*v_W;
             if(j==N-1)
-                f_V[(i+1)*N-1] += beta*v_E;
+                f_V[i*N+j] += beta*v_E;
         }
     }
 }
 
-void updateLoadp(VectorXd u, VectorXd v, int N, double dt, 
+void updateLoadp(VectorXd U, VectorXd V, int N, double dt, 
         VectorXd &f_p)
 {
     /* Update the load vector used in the equation for the 
      * pressure. The stencil is such that each
-     * point requires information from the x-velocities at
+     * point requires information from the intermediate 
+     * x-velocities at
      * East and West and y-velocities at North and South. */
 
     // For clarity, initiate doubles for each relevant point
-    double u_E, u_W, v_N, v_S;
+    double U_E, U_W, V_N, V_S;
     
     for(int i=0; i<N; i++)
     {
         for(int j=0; j<N; j++)
         {
             // x-velocities are zero if on west border
-            if(i==0) u_W = 0.0;
-            else u_W = u[(i-1)*N+j];
+            if(i==0) U_W = 0.0;
+            else U_W = U[(i-1)*N+j];
 
             // x-velocities are zero if on east border
-            if(i==N-1) u_E = 0.0;
-            else u_E = u[i*N+j];
+            if(i==N-1) U_E = 0.0;
+            else U_E = U[i*N+j];
 
             // y-velocities are zero if on south border
-            if(j==0) v_S = 0.0;
-            else v_S = v[(j-1)*N+i];
+            if(j==0) V_S = 0.0;
+            else V_S = V[(j-1)*N+i];
 
             // y-velocities are zero if on north border
-            if(j==N-1) v_N = 0.0;
-            else v_N = v[j*N+i];
+            if(j==N-1) V_N = 0.0;
+            else V_N = V[j*N+i];
           
             // compute element of load vector
-            f_p[i*N+j] = u_E-u_W+v_N-v_S;
+            f_p[i*N+j] = U_E-U_W+V_N-V_S;
         }
     }
 

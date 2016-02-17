@@ -14,7 +14,7 @@ int main(void)
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
     VectorXd v = VectorXd::Zero(N*(N-1));
-    VectorXd p = VectorXd::Ones(N*N);
+    VectorXd p = VectorXd::Zero(N*N);
 
     // Initiate intermediate velocity vectors
     VectorXd U = VectorXd::Zero(N*(N-1));
@@ -67,7 +67,7 @@ int main(void)
         V = solver_UV.solve(f_V);
         
         // Compute rhs for update formula for pressure
-        updateLoadp(u, v, N, dt, f_p);
+        updateLoadp(U, V, N, dt, f_p);
 
         // Solve Ap * p = bp
         p = solver_p.solve(f_p);
