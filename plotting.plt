@@ -5,5 +5,5 @@ set view map
 set pm3d
 unset surface
 
-splot "Results/test.out" u 1:2:3 with lines
+splot "Results/p.out" u 1:2:3 with lines
 pause(10)

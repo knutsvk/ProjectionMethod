@@ -83,10 +83,11 @@ int main(void)
     cout << "Simulation complete!" << endl; 
 
     // Print results (TODO: remember ghost points?) to file
+    int i, j;
     std::fstream fs; 
     fs.open("../Results/uGC.out", std::fstream::out);
-    int i = N/2-1;
-    for(int j=0; j<N; j++)
+    i= N/2-1;
+    for(j=0; j<N; j++)
     {
         fs << (i+1)*dx << "\t" << (j+0.5)*dx << "\t" 
             << u[i*N+j] << "\n";
@@ -94,10 +95,21 @@ int main(void)
     fs.close();
 
     fs.open("../Results/vGC.out", std::fstream::out);
-    for(int j=0; j<N; j++)
+    for(j=0; j<N; j++)
     {
         fs << (j+0.5)*dx << "\t" << (i+1)*dx << "\t" 
             << v[i*N+j] << "\n";
+    }
+    fs.close();
+
+    fs.open("../Results/p.out", std::fstream::out);
+    for(i=0; i<N; i++)
+    {
+        for(j=0; j<N; j++)
+        {
+            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
+                << p[i*N+j] << "\n";
+        }
     }
     fs.close();
 

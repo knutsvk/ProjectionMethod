@@ -12,8 +12,8 @@ MatrixXd buildVelocityMatrix(int N, double dt, double Re)
      * subdiagonal blocks C which are diagonal. */
 
     // Constants for the diagonals
-    double alpha = 1+4*dt/Re;
-    double beta = -dt/Re;
+    double alpha = 1+4*dt/Re*N*N;
+    double beta = -dt/Re*N*N;
 
     // Build the tridiagonal matrix which constitutes a single
     // block on the diagonal of A 
@@ -92,7 +92,7 @@ void updateLoadU(VectorXd u, VectorXd v, int N, double dt,
     double alpha = 0.25*dt*N; 
 
     // Viscosity-related constant
-    double beta = dt/Re; 
+    double beta = dt/Re*N*N; 
 
     // For clarity, initiate doubles for each relevant point
     double u_0, u_N, u_E, u_S, u_W, v_NE, v_SE, v_SW, v_NW;
@@ -172,7 +172,7 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
     double alpha = 0.25*dt*N; 
 
     // Viscosity-related constant
-    double beta = dt/Re; 
+    double beta = dt/Re*N*N; 
 
     // For clarity, initiate doubles for each relevant point
     double v_0, v_N, v_E, v_S, v_W, u_NE, u_SE, u_SW, u_NW;
