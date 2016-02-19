@@ -2,19 +2,19 @@
 
 int main(void) 
 {
-    int N =50;             // Number of cells per direction
+    int N =80;             // Number of cells per direction
     
-    double Re = 100.0;      // Reynolds number
+    double Re = 1000.0;      // Reynolds number
     double a = 1.0;         // Velocity of lid
-    double tau = 1.0;     // End time TODO: run until steady?
     double dx = 1.0/N;      // Grid spacing
     double t = 0.0;         // Time counter
-    double dt = dx/5.0;    // Time step TODO: check stability
+    double dt = dx/10.0;    // Time step TODO: check stability
+    double tau = 1000*dt;     // End time TODO: run until steady?
 
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
     VectorXd v = VectorXd::Zero(N*(N-1));
-    VectorXd p = VectorXd::Zero(N*N);
+    VectorXd p = VectorXd::Ones(N*N);
 
     // Initiate intermediate velocity vectors
     VectorXd U = VectorXd::Zero(N*(N-1));
@@ -37,7 +37,7 @@ int main(void)
     if(solver_UV.info()!=Success)
         cout << "Decomposition of matrix A_UV failed!" << endl; 
     else
-        cout << "Finished decomposition of matrix A_UV" << endl; 
+        cout << "Finished decomposition of matrix A_UV" << endl;
 
     // Build matrix for pressure equations, get solver
     MatrixXd A_p = buildPressureMatrix(N); 
@@ -63,7 +63,7 @@ int main(void)
         U = solver_UV.solve(f_U);
         
         // Repeat the above for y-velocity
-        updateLoadV(u, v, N, dt, a, Re, f_V);
+        updateLoadV(u, v, N, dt, Re, f_V);
         V = solver_UV.solve(f_V);
         
         // Compute rhs for update formula for pressure
@@ -113,4 +113,14 @@ int main(void)
     }
     fs.close();
 
+    fs.open("../Results/vec.out", std::fstream::out);
+    for(i=0; i<N-1; i++)
+    {
+        for(j=0; j<N-1; j++)
+        {
+            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
+                << u[i*N+j] << "\t" << v[j*N+i] << "\n";
+        }
+    }
+    fs.close();
 }

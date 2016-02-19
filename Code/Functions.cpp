@@ -89,7 +89,7 @@ void updateLoadU(VectorXd u, VectorXd v, int N, double dt,
      * Boundary conditions from viscous term are included. */
 
     // CFL-related constant
-    double alpha = 0.25*dt*N; 
+    double alpha = dt*N; 
 
     // Viscosity-related constant
     double beta = dt/Re*N*N; 
@@ -143,9 +143,9 @@ void updateLoadU(VectorXd u, VectorXd v, int N, double dt,
             }
           
             // compute load vector
-            f_U[i*N+j] = u_0-alpha*(pow(u_E+u_0,2)
-                    -pow(u_W+u_0,2)+(u_N+u_0)*(v_NE+v_NW)
-                    -(u_0+u_S)*(v_SW+v_SE));
+            f_U[i*N+j] = u_0-alpha*(
+                    u_0*(u_E-u_W)+0.5*u_0*(v_NW+v_NE-v_SW-v_SE)
+                    +0.125*(u_N-u_S)*(v_NW+v_NE+v_SE+v_SW));
             
             // add BCs from viscosiy term as appropriate
             // if on north or south boundary
@@ -159,7 +159,7 @@ void updateLoadU(VectorXd u, VectorXd v, int N, double dt,
 }
 
 void updateLoadV(VectorXd u, VectorXd v, int N, double dt, 
-        double a, double Re, VectorXd &f_V)
+        double Re, VectorXd &f_V)
 {
     /* Update the load vector used in the equation for the 
      * intermediate y-velocity. The stencil is such that each
@@ -169,7 +169,7 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
      * Boundary conditions from viscous term are included. */
 
     // CFL-related constant
-    double alpha = 0.25*dt*N; 
+    double alpha = dt*N; 
 
     // Viscosity-related constant
     double beta = dt/Re*N*N; 
@@ -182,7 +182,7 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
         for(int j=0; j<N; j++)
         {
             // Point to be evaluated 
-            v_0 = u[i*N+j];
+            v_0 = v[i*N+j];
 
             // y-velocities are zero if on south border
             if(i==0) v_S = 0.0;
@@ -223,10 +223,10 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
             }
           
             // compute load vector
-            f_V[i*N+j] = v_0-alpha*(pow(v_N+v_0,2)
-                    -pow(v_S+v_0,2)+(v_E+v_0)*(u_NE+u_SE)
-                    -(v_0+v_W)*(u_SW+u_NW));
-            
+            f_V[i*N+j] = v_0-alpha*(
+                    v_0*(v_N-v_S)+0.5*v_0*(u_NE+u_SE-u_NW-u_SW)
+                    +0.125*(v_E-v_W)*(u_NW+u_NE+u_SE+u_SW));
+
             // add BCs from viscosiy term as appropriate
             // if on east or west boundary
             if(j==0)
@@ -289,10 +289,18 @@ void updateVelocities(VectorXd U, VectorXd V, VectorXd p,
 
     // Approximation to the y-deriavtive of pressure
     VectorXd pDiffY(N*(N-1));
-    for(int i=0; i<N-1; i++)
+/*    for(int i=0; i<N-1; i++)
     {
         pDiffY.segment(i*N, N) = 
             p.segment((i+1)*N,N)-p.segment(i*N,N);
+    }*/
+
+    for(int i=0; i<N-1; i++)
+    {
+        for(int j=0; j<N; j++)
+        {
+            pDiffY[i*N+j] = p[j*N+(i+1)]-p[j*N+i];
+        }
     }
 
     // Compute
