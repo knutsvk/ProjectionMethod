@@ -1,15 +1,19 @@
 #include "Functions.h"
 
-int main(void) 
+int main(int argc, char* argv[]) 
 {
-    int N =80;             // Number of cells per direction
-    
-    double Re = 1000.0;      // Reynolds number
-    double a = 1.0;         // Velocity of lid
-    double dx = 1.0/N;      // Grid spacing
-    double t = 0.0;         // Time counter
-    double dt = dx/10.0;    // Time step TODO: check stability
-    double tau = 1000*dt;     // End time TODO: run until steady?
+    int N = atoi(argv[1]);     // Number of cells per direction
+    int i, j;
+  
+    double Re = atof(argv[2]); // Reynolds number
+    double a = 1.0;            // Velocity of lid
+    double dx = 1.0/N;         // Grid spacing
+    double t = 0.0;            // Time counter
+    double dt = dx/1.0;       // Time step TODO: check stability
+    double tau = 1000*dt;      // End time TODO: run until steady?
+
+    ofstream fs;           // File stream for writing res
+    char filename[20];
 
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
@@ -77,14 +81,24 @@ int main(void)
         
         t += dt;
         iter++; 
-        if(iter%100==0) cout << "iteration: " << iter << endl; 
+        if(iter%10==0)
+        {
+            cout << "iteration: " << iter << endl; 
+            sprintf(filename, "../Results/uGC%d.out",iter/10);
+            fs.open(filename);
+            i= N/2-1;
+            for(j=0; j<N; j++)
+            {
+                fs << (i+1)*dx << "\t" << (j+0.5)*dx << "\t" 
+                    << u[i*N+j] << "\n";
+            }
+            fs.close();
+        }
     }
 
     cout << "Simulation complete!" << endl; 
 
     // Print results (TODO: remember ghost points?) to file
-    int i, j;
-    std::fstream fs; 
     fs.open("../Results/uGC.out", std::fstream::out);
     i= N/2-1;
     for(j=0; j<N; j++)
@@ -110,6 +124,19 @@ int main(void)
             fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
                 << p[i*N+j] << "\n";
         }
+        fs << "\n";
+    }
+    fs.close();
+
+    fs.open("../Results/uABS.out", std::fstream::out);
+    for(i=0; i<N-1; i++)
+    {
+        for(j=0; j<N-1; j++)
+        {
+            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
+                << sqrt(pow(u[i*N+j],2)+pow(v[j*N+i],2)) << "\n";
+        }
+        fs << "\n";
     }
     fs.close();
 

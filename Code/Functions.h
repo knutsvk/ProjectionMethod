@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cstdio>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 

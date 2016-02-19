@@ -1,7 +1,7 @@
 FILE=Projection
 CXX=g++
-XXFLAGS=-O3 -Wall -Werror -pedantic -lm
-OFLAGS=-ansi
+XXFLAGS=-O3 -Wall -Werror -pedantic -lm 
+OFLAGS=-ansi -I ~/.include/
 
 all: ${FILE}
 
