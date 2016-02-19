@@ -3,22 +3,25 @@
 int main(int argc, char* argv[]) 
 {
     int N = atoi(argv[1]);     // Number of cells per direction
+    if(N==20) N=21;             //TODO: FInd out why N=20 doesnt
     int i, j;
   
     double Re = atof(argv[2]); // Reynolds number
     double a = 1.0;            // Velocity of lid
     double dx = 1.0/N;         // Grid spacing
     double t = 0.0;            // Time counter
-    double dt = dx/1.0;       // Time step TODO: check stability
-    double tau = 1000*dt;      // End time TODO: run until steady?
+    double dt = dx*100/Re;     // Time step TODO: check stability
+    double tol = 1e-10;
 
     ofstream fs;           // File stream for writing res
     char filename[20];
 
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
+    VectorXd prev = u;
+    VectorXd eps = VectorXd::Ones(N*(N-1));
     VectorXd v = VectorXd::Zero(N*(N-1));
-    VectorXd p = VectorXd::Ones(N*N);
+    VectorXd p(N*N);
 
     // Initiate intermediate velocity vectors
     VectorXd U = VectorXd::Zero(N*(N-1));
@@ -54,12 +57,12 @@ int main(int argc, char* argv[])
     else
         cout << "Finished decomposition of matrix A_p" << endl; 
 
-    int iter = 0;
-    while(t<tau)
-    {
-        // Make sure we don't go past end time
-        if(t+dt>tau) dt = tau-t;
+    cout << "Starting simulation!" << endl; 
+    cout << "iter" << "\t" << "time" << "\t" << "||u_c||" << "\n";
 
+    int iter = 0;
+    while(eps.squaredNorm()>1e-10)
+    {
         // Compute rhs for update formula for x-velocity
         updateLoadU(u, v, N, dt, a, Re, f_U);
 
@@ -81,19 +84,13 @@ int main(int argc, char* argv[])
         
         t += dt;
         iter++; 
+
+        eps = u-prev;
+        prev = u;
+
         if(iter%10==0)
-        {
-            cout << "iteration: " << iter << endl; 
-            sprintf(filename, "../Results/uGC%d.out",iter/10);
-            fs.open(filename);
-            i= N/2-1;
-            for(j=0; j<N; j++)
-            {
-                fs << (i+1)*dx << "\t" << (j+0.5)*dx << "\t" 
-                    << u[i*N+j] << "\n";
-            }
-            fs.close();
-        }
+            cout << iter << "\t" << iter*dt << "\t" 
+                << eps.squaredNorm() << "\n";
     }
 
     cout << "Simulation complete!" << endl; 
@@ -103,16 +100,14 @@ int main(int argc, char* argv[])
     i= N/2-1;
     for(j=0; j<N; j++)
     {
-        fs << (i+1)*dx << "\t" << (j+0.5)*dx << "\t" 
-            << u[i*N+j] << "\n";
+        fs << (j+0.5)*dx << "\t" << u[i*N+j] << "\n";
     }
     fs.close();
 
     fs.open("../Results/vGC.out", std::fstream::out);
     for(j=0; j<N; j++)
     {
-        fs << (j+0.5)*dx << "\t" << (i+1)*dx << "\t" 
-            << v[i*N+j] << "\n";
+        fs << (j+0.5)*dx << "\t" << v[i*N+j] << "\n";
     }
     fs.close();
 
