@@ -20,5 +20,7 @@ void updateLoadp(VectorXd U, VectorXd V, int N, double dt,
         VectorXd &f_p);
 void updateVelocities(VectorXd U, VectorXd V, VectorXd p, 
         int N, double dt, VectorXd &u, VectorXd &v);
+VectorXd buildVorticityVector(VectorXd u, VectorXd v, int N);
+MatrixXd buildStreamMatrix(int N);
 
 #endif

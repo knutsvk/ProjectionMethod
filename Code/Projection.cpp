@@ -2,19 +2,31 @@
 
 int main(int argc, char* argv[]) 
 {
-    int N = atoi(argv[1]);     // Number of cells per direction
+    int N; 
+    double Re; 
+
+    if(argc==1)
+    {
+        cout << "N: ";
+        cin >> N; 
+        cout << "Re: ";
+        cin >> Re; 
+    }
+    else{
+        N = atoi(argv[1]);     // Number of cells per direction
+        Re = atof(argv[2]); // Reynolds number
+    }
     if(N==20) N=21;             //TODO: FInd out why N=20 doesnt
+
     int i, j;
-  
-    double Re = atof(argv[2]); // Reynolds number
     double a = 1.0;            // Velocity of lid
     double dx = 1.0/N;         // Grid spacing
     double t = 0.0;            // Time counter
-    double dt = dx*100/Re;     // Time step TODO: check stability
-    double tol = 1e-10;
+    double dt = 1e5*dx/(Re*Re);// Time step TODO: check stability
+    double tol = 1e-9;
 
     ofstream fs;           // File stream for writing res
-    char filename[20];
+    char filename[50];
 
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
@@ -36,32 +48,26 @@ int main(int argc, char* argv[])
     // Build matrix for velocity equations
     MatrixXd A_UV = buildVelocityMatrix(N, dt, Re);
     SparseMatrix<double> Sp_A_UV = A_UV.sparseView();
-    cout << "Finished building matrix A_UV!" << endl; 
-
     // Get factorization
     SimplicialLDLT<SparseMatrix<double> > solver_UV;
     solver_UV.compute(Sp_A_UV);
-    if(solver_UV.info()!=Success)
-        cout << "Decomposition of matrix A_UV failed!" << endl; 
-    else
-        cout << "Finished decomposition of matrix A_UV" << endl;
 
     // Build matrix for pressure equations, get solver
     MatrixXd A_p = buildPressureMatrix(N); 
     SparseMatrix<double> Sp_A_p = A_p.sparseView();
-    cout << "Finished building matrix A_p!" << endl; 
     SimplicialLDLT<SparseMatrix<double> > solver_p;
     solver_p.compute(Sp_A_p);
-    if(solver_p.info()!=Success)
-        cout << "Decomposition of matrix A_p failed!" << endl; 
-    else
-        cout << "Finished decomposition of matrix A_p" << endl; 
 
-    cout << "Starting simulation!" << endl; 
+    // Build matrix for pressure equations, get solver
+    MatrixXd A_psi = buildStreamMatrix(N-1); 
+    SparseMatrix<double> Sp_A_psi = A_psi.sparseView();
+    SimplicialLDLT<SparseMatrix<double> > solver_psi;
+    solver_psi.compute(Sp_A_psi);
+
     cout << "iter" << "\t" << "time" << "\t" << "||u_c||" << "\n";
 
     int iter = 0;
-    while(eps.squaredNorm()>1e-10)
+    while(eps.squaredNorm()>tol)
     {
         // Compute rhs for update formula for x-velocity
         updateLoadU(u, v, N, dt, a, Re, f_U);
@@ -93,10 +99,42 @@ int main(int argc, char* argv[])
                 << eps.squaredNorm() << "\n";
     }
 
-    cout << "Simulation complete!" << endl; 
+    cout << "Steady state reached." << endl;
 
-    // Print results (TODO: remember ghost points?) to file
-    fs.open("../Results/uGC.out", std::fstream::out);
+    // Calculate vorticity vector and stream function
+    VectorXd omega = buildVorticityVector(u, v, N);
+    VectorXd psi = solver_psi.solve(omega);
+
+    // Print results to file
+
+    sprintf(filename, "../Results/psi_N%d_Re%d.out", N, int(Re));
+    fs.open(filename, std::fstream::out);
+    for(i=0; i<N-1; i++)
+    {
+        for(j=0; j<N-1; j++)
+        {
+            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
+                << psi[i*(N-1)+j] << "\n";
+        }
+        fs << "\n";
+    }
+    fs.close();
+
+    sprintf(filename, "../Results/omega_N%d_Re%d.out", N, int(Re));
+    fs.open(filename, std::fstream::out);
+    for(i=0; i<N-1; i++)
+    {
+        for(j=0; j<N-1; j++)
+        {
+            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
+                << omega[i*(N-1)+j] << "\n";
+        }
+        fs << "\n";
+    }
+    fs.close();
+
+    sprintf(filename, "../Results/uGC_N%d_Re%d.out", N, int(Re));
+    fs.open(filename, std::fstream::out);
     i= N/2-1;
     for(j=0; j<N; j++)
     {
@@ -104,14 +142,16 @@ int main(int argc, char* argv[])
     }
     fs.close();
 
-    fs.open("../Results/vGC.out", std::fstream::out);
+    sprintf(filename, "../Results/vGC_N%d_Re%d.out", N, int(Re));
+    fs.open(filename, std::fstream::out);
     for(j=0; j<N; j++)
     {
         fs << (j+0.5)*dx << "\t" << v[i*N+j] << "\n";
     }
     fs.close();
 
-    fs.open("../Results/p.out", std::fstream::out);
+    sprintf(filename, "../Results/p_N%d_Re%d.out", N, int(Re));
+    fs.open(filename, std::fstream::out);
     for(i=0; i<N; i++)
     {
         for(j=0; j<N; j++)
@@ -123,19 +163,8 @@ int main(int argc, char* argv[])
     }
     fs.close();
 
-    fs.open("../Results/uABS.out", std::fstream::out);
-    for(i=0; i<N-1; i++)
-    {
-        for(j=0; j<N-1; j++)
-        {
-            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
-                << sqrt(pow(u[i*N+j],2)+pow(v[j*N+i],2)) << "\n";
-        }
-        fs << "\n";
-    }
-    fs.close();
-
-    fs.open("../Results/vec.out", std::fstream::out);
+    sprintf(filename, "../Results/vec_N%d_Re%d.out", N, int(Re));
+    fs.open(filename, std::fstream::out);
     for(i=0; i<N-1; i++)
     {
         for(j=0; j<N-1; j++)

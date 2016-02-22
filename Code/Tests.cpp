@@ -2,19 +2,22 @@
 
 int main(void)
 {
-    int N=5;
-    VectorXd u(N*N);
-    for(int i=0; i<N; i++)
+    double dx=.01;
+    double x=0.7349;
+    int i=round(x/dx)-1;
+    x=(i+1)*dx;
+    cout << x << endl;
+
+    double u, v;
+    for(int i=0; i<11; i++)
     {
-        for(int j=0; j<N; j++)
+        u=1-2.0*i/10.0;
+        for(int j=0; j<11; j++)
         {
-            u[i*N+j] = i*N+(j+1);
+            v=1-2.0*j/10.0;
+            cout << "u= " << u << "\t" 
+                << "v= " << v << "\t"
+                << "angle= " << atan(v/u)+M_PI/2.0 << endl; 
         }
     }
-    cout << "N=" << N << endl;
-    cout << "u=" << endl << u << endl;
-    cout << "u.tail(N*(N-1))=" << endl << u.tail(N*(N-1)) << endl;
-    cout << "u.head(N*(N-1))=" << endl << u.head(N*(N-1)) << endl;
-    MatrixXd A = buildPressureMatrix(N);
-    cout << "A=" << endl << A << endl;
 }

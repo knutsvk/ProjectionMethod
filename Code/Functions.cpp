@@ -308,4 +308,51 @@ void updateVelocities(VectorXd U, VectorXd V, VectorXd p,
     v = V - dt*N*pDiffY;
 }
 
+VectorXd buildVorticityVector(VectorXd u, VectorXd v, int N)
+{
+    VectorXd omega((N-1)*(N-1));
+    for(int i=0; i<N-1; i++)
+    {
+        for(int j=0; j<N-1; j++)
+        {
+            omega[i*(N-1)+j]=u[i*N+(j+1)]-u[i*N+j]
+                -(v[j*N+(i+1)]-v[j*N+i]);
+        }
+    }
+    return omega*N;
+}
+
+MatrixXd buildStreamMatrix(int N)
+{
+    /* Builds the stiffness matrix used to solve the system of
+     * equations Ax=b when x is the stream function. 
+     * A is a (N-1)*(N-1)-by-(N-1)*(N-1) block matrix, 
+     * consisting of 
+     * diagonal blocks B which themselves are tridiagonal and 
+     * subdiagonal blocks C which are diagonal. */
+
+    // Build the tridiagonal matrix which constitutes a single
+    // block on the diagonal of A 
+    MatrixXd B = MatrixXd::Zero(N,N);
+    B.diagonal() = -4*VectorXd::Ones(N);
+    B.diagonal(1) = VectorXd::Ones(N-1);
+    B.diagonal(-1) = VectorXd::Ones(N-1);
+
+    // Build the diagonal matrix which is on the subdiagonals
+    MatrixXd C = MatrixXd::Identity(N,N);
+
+    // Populate A with the blocks
+    MatrixXd A = MatrixXd::Zero(N*N,N*N);
+    for(int i=0; i<N; i++)
+    {
+        A.block(i*N,i*N,N,N) = B;
+        if(i!=0)
+            A.block((i-1)*N,i*N,N,N) = C;
+        if(i!=N-1)
+            A.block((i+1)*N,i*N,N,N) = C;
+    }
+
+    return A*N*N;
+}
+
 #endif
