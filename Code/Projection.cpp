@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     double a = 1.0;            // Velocity of lid
     double dx = 1.0/N;         // Grid spacing
     double t = 0.0;            // Time counter
-    double dt = 1e5*dx/(Re*Re);// Time step TODO: check stability
+    double dt = 1e2*dx/Re;// Time step TODO: check stability
     double tol = 1e-9;
 
     ofstream fs;           // File stream for writing res
