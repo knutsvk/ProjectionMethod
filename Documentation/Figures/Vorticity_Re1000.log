@@ -1,4 +1,4 @@
-This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  29 FEB 2016 17:25
+This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  29 FEB 2016 18:13
  \write18 enabled.
 **\def\tikzexternalrealjob{MiniProj2_ProjectionMethod}\input{MiniProj2_Projecti
 onMethod}
@@ -73,7 +73,8 @@ File: upsy.fd 2001/06/04 font definitions for U/psy.
 \@enLab=\toks16
 \@sep=\skip43
 \@@sep=\skip44
-(/opt/texlive/2015/texmf-dist/tex/latex/natbib/natbib.sty
+(./Figures/Vorticity_Re1000.spl) (/opt/texlive/2015/texmf-dist/tex/latex/natbib
+/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip45
 \bibsep=\skip46
@@ -763,7 +764,7 @@ No file Figures/Vorticity_Re1000.bbl.
 )
 
 Here is how much of LuaTeX's memory you used:
- 24950 strings out of 494938
+ 24956 strings out of 494938
  100000,7087374 words of node,token memory allocated
  360 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 1 kern, 1 glyph, 48 glue_spec, 1 write node
