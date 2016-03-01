@@ -1,0 +1,3 @@
+Figures/Stream_Re100.pdf: Figures/Stream_Re100_contourtmp0.table
+Figures/Stream_Re100.pdf: ../Results/vec_N33_Re100.out
+Figures/Stream_Re100.pdf: ../Results/vec_N33_Re100.out

@@ -4,8 +4,8 @@
 #   4   1000
 #   5   3200
 
-Re=1000
-n=4
+Re=3200
+n=5
 
 plot sprintf("../Results/uGC_N17_Re%d.out",Re) u 1:2,\
     sprintf("../Results/uGC_N33_Re%d.out",Re) u 1:2,\

@@ -165,6 +165,7 @@ int main(int argc, char* argv[])
 
     sprintf(filename, "../Results/vec_N%d_Re%d.out", N, int(Re));
     fs.open(filename, std::fstream::out);
+    fs << "x\ty\tu\tv\n";
     for(i=0; i<N-1; i++)
     {
         for(j=0; j<N-1; j++)

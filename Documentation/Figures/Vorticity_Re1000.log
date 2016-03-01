@@ -1,4 +1,4 @@
-This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  29 FEB 2016 18:13
+This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  1 MAR 2016 13:44
  \write18 enabled.
 **\def\tikzexternalrealjob{MiniProj2_ProjectionMethod}\input{MiniProj2_Projecti
 onMethod}
@@ -727,6 +727,18 @@ Underfull \hbox (badness 4024) in paragraph at lines 317--318
 [][]\OT1/cmr/m/n/10 Spa-tial dis-cretiza-tion: the fi-nite vol-ume
  []
 
+PGFPlots: reading {../Results/psi_N129_Re100.out}
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+PGFPlots: reading {../Results/psi_N129_Re400.out}
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+PGFPlots: reading {../Results/psi_N129_Re1000.out}
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+PGFPlots: reading {../Results/psi_N129_Re3200.out}
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
 PGFPlots: reading {../Results/omega_N129_Re100.out}
 A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
 sable this.
@@ -736,7 +748,7 @@ sable this.
 PGFPlots: reading {../Results/omega_N129_Re1000.out}
 
 \openout5 = Figures/Vorticity_Re1000.dpth
-Package pgfplots info on input line 393: Using 'lua backend=false' for plot 1 (t
+Package pgfplots info on input line 434: Using 'lua backend=false' for plot 1 (t
 ype 'contour external'): plot handler does not support LUA.
 
 \openout4 = Figures/Vorticity_Re1000_contourtmp0.dat
@@ -751,7 +763,7 @@ PGFPlots: reading {Figures/Vorticity_Re1000_contourtmp0.table}
 
 Package pgfplots Warning: mesh processing did not find '[mesh/rows=<N>]' or '[me
 sh/cols=<N>]'. Assuming [mesh/rows=128,mesh/cols=] as sqrt(num points) = sqrt(16
-384) [ = 127.99998000000000]. on input line 393.
+384) [ = 127.99998000000000]. on input line 434.
 
  [warning /pgfplots/warning/matrix delinearize uses sqrt]
 [1
@@ -764,15 +776,15 @@ No file Figures/Vorticity_Re1000.bbl.
 )
 
 Here is how much of LuaTeX's memory you used:
- 24956 strings out of 494938
+ 24988 strings out of 494938
  100000,7087374 words of node,token memory allocated
- 360 words of node memory still in use:
+ 361 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 1 kern, 1 glyph, 48 glue_spec, 1 write node
 s
-   avail lists: 2:56,3:5161,4:1284,5:134,6:2312,7:63,9:260,10:236
- 27625 multiletter control sequences out of 65536+600000
+   avail lists: 2:56,3:5169,4:1409,5:166,6:2650,7:65,9:269,10:264
+ 27633 multiletter control sequences out of 65536+600000
  42 fonts using 1661859 bytes
- 76i,13n,129p,777b,2389s stack positions out of 5000i,500n,10000p,1411933b,100000s
+ 76i,13n,129p,777b,2390s stack positions out of 5000i,500n,10000p,1411933b,100000s
 <</opt/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><</opt/
 texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
 Output written on Figures/Vorticity_Re1000.pdf (1 page, 150717 bytes).

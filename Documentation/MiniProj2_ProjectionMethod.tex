@@ -9,8 +9,19 @@
 
 \usepgfplotslibrary{groupplots, external, colormaps}
 \tikzexternalize[prefix=Figures/]
+
+\pgfplotscreateplotcyclelist{knuts}
+{
+    red,mark=x\\%
+    blue,mark=o\\%
+    teal,mark=triangle\\%
+    purple,mark=*,mark size=.5pt\\%
+    black,mark=diamond*,mark size=3pt\\%
+}
+
 \pgfplotsset
 {   
+    cycle list name=knuts, 
     colormap={viridis}{
         rgb=(0.26700401,  0.00487433,  0.32941519)
         rgb=(0.26851048,  0.00960483,  0.33542652)
@@ -358,42 +369,194 @@ All results for Re=100,400,1000,3200\ldots\ldots
     \item 1D slices in the geometric center, including Ghia's results
     \item Stram lines and velocity vector fields
     \item Vorticity 
-    \item (Pressure field)
+    \item (Pressure field)!
 \end{itemize}
+
+\begin{figure*}[t]
+    \centering
+    \tikzsetnextfilename{uSlice}
+    \begin{tikzpicture}
+        \begin{groupplot}
+            [
+                height=0.8\columnwidth,
+                width=\columnwidth,
+                group style=
+                {
+                    group size=2 by 2, 
+                    xlabels at=edge bottom, 
+                    xticklabels at=edge bottom, 
+                    ylabels at=edge left, 
+                    vertical sep=25pt, 
+                    horizontal sep=25pt
+                },
+                xlabel=$y$, xmin=0, xmax=1, 
+                ylabel=$u$, 
+                ylabel style={rotate=-90}
+            ]
+            \nextgroupplot[title={Re=100}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/uGC_N\N_Re100.out}; 
+            }
+            \addplot+[only marks] table[x={y}, y={Re100}]{../Results/uGC.ref};
+
+            \nextgroupplot[title={Re=400}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/uGC_N\N_Re400.out}; 
+            }
+            \addplot+[only marks] table[x={y}, y={Re400}]{../Results/uGC.ref};
+
+            \nextgroupplot[title={Re=1000}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/uGC_N\N_Re1000.out}; 
+            }
+            \addplot+[only marks] table[x={y}, y={Re1000}]{../Results/uGC.ref};
+
+            \nextgroupplot[title={Re=3200}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/uGC_N\N_Re3200.out}; 
+            }
+            \addplot+[only marks, unbounded coords=jump, 
+            y filter/.expression={y<-0.5 ? nan : y}] 
+            table[x={y}, y={Re3200}]{../Results/uGC.ref};
+        \end{groupplot}
+    \end{tikzpicture}
+    \caption{First component of velocity through $x=0.5$.}
+    \label{fig:uGC}
+\end{figure*}
+
+\begin{figure*}[t]
+    \centering
+    \tikzsetnextfilename{vSlice}
+    \begin{tikzpicture}
+        \begin{groupplot}
+            [
+                height=0.8\columnwidth,
+                width=\columnwidth,
+                group style=
+                {
+                    group size=2 by 2, 
+                    xlabels at=edge bottom, 
+                    xticklabels at=edge bottom, 
+                    ylabels at=edge left, 
+                    vertical sep=25pt, 
+                    horizontal sep=25pt
+                },
+                xlabel=$x$, xmin=0, xmax=1, 
+                ylabel=$v$, 
+                ylabel style={rotate=-90}
+            ]
+            \nextgroupplot[title={Re=100}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re100.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re100}]{../Results/vGC.ref};
+
+            \nextgroupplot[title={Re=400}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re400.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re400}]{../Results/vGC.ref};
+
+            \nextgroupplot[title={Re=1000}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re1000.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re1000}]{../Results/vGC.ref};
+
+            \nextgroupplot[title={Re=3200}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re3200.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re3200}]{../Results/vGC.ref};
+        \end{groupplot}
+    \end{tikzpicture}
+    \caption{Second component of velocity through $y=0.5$.}
+    \label{fig:vGC}
+\end{figure*}
 
 \begin{figure*}[t]
     \centering
     \foreach \Re in {100,400,1000,3200}
     {
-        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\test}
-        \tikzsetnextfilename{Vorticity_Re\Re}
+        \pgfplotstableread{../Results/psi_N33_Re\Re.out}{\psi}
+        \tikzsetnextfilename{Stream_Re\Re}
         \begin{tikzpicture}
             \begin{axis}
             [
                 title={${\rm Re}=\Re$},
                 xlabel={$x$}, ylabel={$y$},
                 xmin=0, xmax=1, ymin=0, ymax=1,
-                point meta min=-6, point meta max=6,
                 view={0}{90}
             ]
-                \addplot3[surf,shader=interp] table[]{\test}; 
+                \addplot3[surf,shader=interp] table[]{\psi}; 
                 \addplot3
                 [
-                    mesh/rows=128, mesh/cols=128, 
+                    mesh/rows=32, mesh/cols=32, 
                     contour gnuplot=
                     {
                         labels=false, 
                         draw color=black, 
-                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
+                        levels=
+                        {
+                            -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07,
+                            -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5,
+                            5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3 
+                        }
                     }
                 ]
-                table[]{\test}; 
+                table{\psi}; 
+                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+                table[each nth point=126]{../Results/vec_N33_Re\Re.out};
+                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+                table[each nth point=130]{../Results/vec_N33_Re\Re.out};
             \end{axis}
         \end{tikzpicture}
     }
-    \caption{Vorticity for different Reynold's numbers}
-    \label{fig:vorticity}
+    \caption{Stream function for different Reynold's numbers}
+    \label{fig:stream}
 \end{figure*}
+
+%\begin{figure*}[t]
+%    \centering
+%    \foreach \Re in {100,400,1000,3200}
+%    {
+%        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
+%        \tikzsetnextfilename{Vorticity_Re\Re}
+%        \begin{tikzpicture}
+%            \begin{axis}
+%            [
+%                title={${\rm Re}=\Re$},
+%                xlabel={$x$}, ylabel={$y$},
+%                xmin=0, xmax=1, ymin=0, ymax=1,
+%                point meta min=-6, point meta max=6,
+%                view={0}{90}
+%            ]
+%                \addplot3[surf,shader=interp] table[]{\omega}; 
+%                \addplot3
+%                [
+%                    mesh/rows=128, mesh/cols=128, 
+%                    contour gnuplot=
+%                    {
+%                        labels=false, 
+%                        draw color=black, 
+%                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
+%                    }
+%                ]
+%                table[]{\omega}; 
+%            \end{axis}
+%        \end{tikzpicture}
+%    }
+%    \caption{Vorticity for different Reynold's numbers}
+%    \label{fig:vorticity}
+%\end{figure*}
 
 \subsection{Computational efficiency}
 \label{subsec:efficiency}

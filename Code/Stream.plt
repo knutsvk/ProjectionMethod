@@ -1,4 +1,4 @@
-Re=3200
+Re=100
 
 set view map
 set pm3d
