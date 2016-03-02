@@ -1,8 +1,78 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
 \expandafter\ifx\csname url\endcsname\relax
   \def\url#1{\texttt{#1}}\fi
 \expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
 \expandafter\ifx\csname href\endcsname\relax
   \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{marshall1997finite}
+J.~Marshall, A.~Adcroft, C.~Hill, L.~Perelman, C.~Heisey, A finite-volume,
+  incompressible {N}avier-{S}tokes model for studies of the ocean on parallel
+  computers, Journal of Geophysical Research: Oceans 102~(C3) (1997)
+  5753--5766.
+
+\bibitem{giraldo2008study}
+F.~X. Giraldo, M.~Restelli, A study of spectral element and discontinuous
+  {G}alerkin methods for the {N}avier-{S}tokes equations in nonhydrostatic
+  mesoscale atmospheric modeling: {E}quation sets and test cases, Journal of
+  Computational Physics 227~(8) (2008) 3849--3877.
+
+\bibitem{rai1987navier}
+M.~M. Rai, Navier-{S}tokes simulations of rotor/stator interaction using
+  patched and overlaid grids, Journal of Propulsion and Power 3~(5) (1987)
+  387--396.
+
+\bibitem{thomas1990navier}
+J.~L. Thomas, W.~K. Anderson, S.~T. Krist, {N}avier-{S}tokes computations of
+  vortical flows over low-aspect-ratio wings, AIAA journal 28~(2) (1990)
+  205--212.
+
+\bibitem{jameson1998optimum}
+A.~Jameson, L.~Martinelli, N.~Pierce, Optimum aerodynamic design using the
+  {N}avier-{S}tokes equations, Theoretical and Computational Fluid Dynamics
+  10~(1-4) (1998) 213--237.
+
+\bibitem{peskin1977numerical}
+C.~S. Peskin, Numerical analysis of blood flow in the heart, Journal of
+  Computational Physics 25~(3) (1977) 220--252.
+
+\bibitem{mihaescu2008large}
+M.~Mihaescu, S.~Murugappan, M.~Kalra, S.~Khosla, E.~Gutmark, Large eddy
+  simulation and {R}eynolds-averaged {N}avier-{S}tokes modeling of flow in a
+  realistic pharyngeal airway model: {A}n investigation of obstructive sleep
+  apnea, Journal of Biomechanics 41~(10) (2008) 2279--2288.
+
+\bibitem{deiber1979flow}
+J.~Deiber, W.~Schowalter, Flow through tubes with sinusoidal axial variations
+  in diameter, AIChE Journal 25~(4) (1979) 638--645.
+
+\bibitem{vinay2006numerical}
+G.~Vinay, A.~Wachs, J.-F. Agassant, Numerical simulation of weakly compressible
+  {B}ingham flows: the restart of pipeline flows of waxy crude oils, Journal of
+  non-newtonian fluid mechanics 136~(2) (2006) 93--105.
+
+\bibitem{cardenas2007navier}
+M.~B. Cardenas, D.~T. Slottke, R.~A. Ketcham, J.~M. Sharp, Navier-{S}tokes flow
+  and transport simulations using real fractures shows heavy tailing due to
+  eddies, Geophysical Research Letters 34~(14).
+
+\bibitem{boyer2010cahn}
+F.~Boyer, C.~Lapuerta, S.~Minjeaud, B.~Piar, M.~Quintard,
+  Cahn--{H}illiard/{N}avier--{S}tokes model for the simulation of three-phase
+  flows, Transport in Porous Media 82~(3) (2010) 463--483.
+
+\bibitem{navier1822memoire}
+C.~L. M.~H. Navier, Memoire sur les lois du mouvement des fluides, M{\'e}moires
+  de l'Acad{\'e}mie Royale des Sciences de l'Institut de France 6 (1822)
+  389--440.
+
+\bibitem{stokes1845theories}
+G.~G. Stokes, On the theories of the internal friction of fluids in motion and
+  of the equilibrium and motion of elastic solids, Transactions of the
+  Cambridge Philosophical Society 8 (1845) 287--319.
+
+\bibitem{fefferman2006existence}
+C.~L. Fefferman, Existence and smoothness of the {N}avier-{S}tokes equation,
+  The Millennium Prize Problems (2006) 57--67.
 
 \end{thebibliography}

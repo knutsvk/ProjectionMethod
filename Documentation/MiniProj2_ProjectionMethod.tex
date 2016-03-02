@@ -4,6 +4,7 @@
 \usepackage{mathtools}
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{bm}
 
 \biboptions{super, square, sort&compress}
 
@@ -304,9 +305,66 @@
 \section{Introduction}
 \label{sec:introduction}
 
+In physics, few equations span as wide a range of applications as the
+Navier-Stokes equations of fluid dynamics. They govern the motion of viscuous
+fluids in a continuum framework, and as such have applications in {\em e.g.\ }
+climate modelling \cite{marshall1997finite, giraldo2008study}, aerodynamics
+\cite{rai1987navier, thomas1990navier, jameson1998optimum}, medicinal research
+\cite{peskin1977numerical, mihaescu2008large} and petroleum engineering
+\cite{deiber1979flow, vinay2006numerical, cardenas2007navier, boyer2010cahn},
+to name a few. Named after Claude Navier and George Stokes for their major
+contributions \cite{navier1822memoire, stokes1845theories} to its formulation
+in the first half of the nineteenth century, the equations have constituted a
+major field of research in their own right since their formulation, and
+continue to do so today. Apart from their numerous applications, the equations
+are fundamentally interesting from a mathematical point of view. In fact,
+(dis-)proving the existence and uniqueness of their solutions is one of the
+seven Millenium prize problems \cite{fefferman2006existence} for which a prize
+of one million US dollars is associated. 
+
+The generalized Navier-Stokes equations are based on the conservation of mass
+through the continuity equation,
+
+\begin{equation}
+    \partial_t \rho + \nabla \cdot (\rho {\bm u}) = 0 \,,
+    \label{eq:continuity}
+\end{equation}
+%
+in addition to conservation of momentum as given by the Cauchy momentum equation
+
+\begin{equation}
+    \rho \left( \partial_t \bm{u} + \bm{u} \cdot \nabla \bm{u} \right) 
+    = - \nabla p + \nabla \cdot \bm{\tau} + \bm{f} \,.
+    \label{eq:cauchy}
+\end{equation}
+%
+Here, we have introduced the primitive variables density $\rho$, velocity
+$\bm{u}$ and pressure $p$, in addition to the deviatoric stress tensor
+$\bm{\tau}$. The vector $\bm{f}$ accounts for external body sources such as
+gravity acting on the fluid, and shall henceforth be disregarded. The
+Navier-Stokes equations are an extension of Eqns.\ \eqref{eq:continuity} and
+\eqref{eq:cauchy} derived under the assumptions that the strain tensor
+$\bm{\tau}$ is a linear function of the strain tensor $\dot{\bm{\gamma}}=\nabla
+\bm{u} + (\nabla \bm{u})^T$, that $\nabla \cdot \bm{\tau} = 0$ for fluids at
+rest, and that the fluid is isotropoc. Given these assumptions, Eq.\
+\eqref{eq:cauchy} can be rewritten
+
+\begin{equation}
+    \rho \left( \partial_t \bm{u} + \bm{u} \cdot \nabla \bm{u} \right) 
+    = - \nabla p + \nabla \cdot \left( \mu \dot{\bm{\gamma}} \right) + \nabla
+    \left( \lambda \nabla \cdot \bm{u} \right)
+    \label{eq:compressible}
+\end{equation}
+%
+where $\mu$ and $\lambda$ are the first and second coefficients of viscosity,
+respectively. 
+
+When the fluid density $\rho$ is constant, the flow is said to be incompressible. The
+second coefficient of viscosity, $\lambda$, is related to bulk viscosity and
+disappears for incompressible flow. Subsequently, we shall refer to $\mu$ as
+the viscosity of the fluid in the following. 
+
 \begin{itemize}
-    \item Introduction to the Navier-Stokes equations: history, difficulties,
-        prize money. 
     \item Show how they simplify under the assumption of incompressibility.
         Nondimensionalize the equations. 
     \item Define stream function and vorticity.
@@ -372,191 +430,191 @@ All results for Re=100,400,1000,3200\ldots\ldots
     \item (Pressure field)!
 \end{itemize}
 
-\begin{figure*}[t]
-    \centering
-    \tikzsetnextfilename{uSlice}
-    \begin{tikzpicture}
-        \begin{groupplot}
-            [
-                height=0.8\columnwidth,
-                width=\columnwidth,
-                group style=
-                {
-                    group size=2 by 2, 
-                    xlabels at=edge bottom, 
-                    xticklabels at=edge bottom, 
-                    ylabels at=edge left, 
-                    vertical sep=25pt, 
-                    horizontal sep=25pt
-                },
-                xlabel=$y$, xmin=0, xmax=1, 
-                ylabel=$u$, 
-                ylabel style={rotate=-90}
-            ]
-            \nextgroupplot[title={Re=100}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/uGC_N\N_Re100.out}; 
-            }
-            \addplot+[only marks] table[x={y}, y={Re100}]{../Results/uGC.ref};
-
-            \nextgroupplot[title={Re=400}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/uGC_N\N_Re400.out}; 
-            }
-            \addplot+[only marks] table[x={y}, y={Re400}]{../Results/uGC.ref};
-
-            \nextgroupplot[title={Re=1000}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/uGC_N\N_Re1000.out}; 
-            }
-            \addplot+[only marks] table[x={y}, y={Re1000}]{../Results/uGC.ref};
-
-            \nextgroupplot[title={Re=3200}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/uGC_N\N_Re3200.out}; 
-            }
-            \addplot+[only marks, unbounded coords=jump, 
-            y filter/.expression={y<-0.5 ? nan : y}] 
-            table[x={y}, y={Re3200}]{../Results/uGC.ref};
-        \end{groupplot}
-    \end{tikzpicture}
-    \caption{First component of velocity through $x=0.5$.}
-    \label{fig:uGC}
-\end{figure*}
-
-\begin{figure*}[t]
-    \centering
-    \tikzsetnextfilename{vSlice}
-    \begin{tikzpicture}
-        \begin{groupplot}
-            [
-                height=0.8\columnwidth,
-                width=\columnwidth,
-                group style=
-                {
-                    group size=2 by 2, 
-                    xlabels at=edge bottom, 
-                    xticklabels at=edge bottom, 
-                    ylabels at=edge left, 
-                    vertical sep=25pt, 
-                    horizontal sep=25pt
-                },
-                xlabel=$x$, xmin=0, xmax=1, 
-                ylabel=$v$, 
-                ylabel style={rotate=-90}
-            ]
-            \nextgroupplot[title={Re=100}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/vGC_N\N_Re100.out}; 
-            }
-            \addplot+[only marks] table[x={x}, y={Re100}]{../Results/vGC.ref};
-
-            \nextgroupplot[title={Re=400}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/vGC_N\N_Re400.out}; 
-            }
-            \addplot+[only marks] table[x={x}, y={Re400}]{../Results/vGC.ref};
-
-            \nextgroupplot[title={Re=1000}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/vGC_N\N_Re1000.out}; 
-            }
-            \addplot+[only marks] table[x={x}, y={Re1000}]{../Results/vGC.ref};
-
-            \nextgroupplot[title={Re=3200}]
-            \foreach \N in {17,33,65,129}
-            {
-                \addplot+[only marks] table{../Results/vGC_N\N_Re3200.out}; 
-            }
-            \addplot+[only marks] table[x={x}, y={Re3200}]{../Results/vGC.ref};
-        \end{groupplot}
-    \end{tikzpicture}
-    \caption{Second component of velocity through $y=0.5$.}
-    \label{fig:vGC}
-\end{figure*}
-
-\begin{figure*}[t]
-    \centering
-    \foreach \Re in {100,400,1000,3200}
-    {
-        \pgfplotstableread{../Results/psi_N129_Re\Re.out}{\psi}
-        \tikzsetnextfilename{Stream_Re\Re}
-        \begin{tikzpicture}
-            \begin{axis}
-            [
-                title={${\rm Re}=\Re$},
-                xlabel={$x$}, ylabel={$y$},
-                xmin=0, xmax=1, ymin=0, ymax=1,
-                view={0}{90}
-            ]
-                \addplot3[surf,shader=interp] table[]{\psi}; 
-                \addplot3
-                [
-                    mesh/rows=128, mesh/cols=128, 
-                    contour gnuplot=
-                    {
-                        labels=false, 
-                        draw color=black, 
-                        levels=
-                        {
-                            -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07,
-                            -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5,
-                            5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3 
-                        }
-                    }
-                ]
-                table{\psi}; 
-                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
-                table[each nth point=510]{../Results/vec_N129_Re\Re.out};
-                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
-                table[each nth point=514]{../Results/vec_N129_Re\Re.out};
-            \end{axis}
-        \end{tikzpicture}
-    }
-    \caption{Stream function for different Reynold's numbers}
-    \label{fig:stream}
-\end{figure*}
-
-\begin{figure*}[t]
-    \centering
-    \foreach \Re in {100,400,1000,3200}
-    {
-        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
-        \tikzsetnextfilename{Vorticity_Re\Re}
-        \begin{tikzpicture}
-            \begin{axis}
-            [
-                title={${\rm Re}=\Re$},
-                xlabel={$x$}, ylabel={$y$},
-                xmin=0, xmax=1, ymin=0, ymax=1,
-                point meta min=-6, point meta max=6,
-                view={0}{90}
-            ]
-                \addplot3[surf,shader=interp] table[]{\omega}; 
-                \addplot3
-                [
-                    mesh/rows=128, mesh/cols=128, 
-                    contour gnuplot=
-                    {
-                        labels=false, 
-                        draw color=black, 
-                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
-                    }
-                ]
-                table[]{\omega}; 
-            \end{axis}
-        \end{tikzpicture}
-    }
-    \caption{Vorticity for different Reynold's numbers}
-    \label{fig:vorticity}
-\end{figure*}
+%\begin{figure*}[t]
+%    \centering
+%    \tikzsetnextfilename{uSlice}
+%    \begin{tikzpicture}
+%        \begin{groupplot}
+%            [
+%                height=0.8\columnwidth,
+%                width=\columnwidth,
+%                group style=
+%                {
+%                    group size=2 by 2, 
+%                    xlabels at=edge bottom, 
+%                    xticklabels at=edge bottom, 
+%                    ylabels at=edge left, 
+%                    vertical sep=25pt, 
+%                    horizontal sep=25pt
+%                },
+%                xlabel=$y$, xmin=0, xmax=1, 
+%                ylabel=$u$, 
+%                ylabel style={rotate=-90}
+%            ]
+%            \nextgroupplot[title={Re=100}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/uGC_N\N_Re100.out}; 
+%            }
+%            \addplot+[only marks] table[x={y}, y={Re100}]{../Results/uGC.ref};
+%
+%            \nextgroupplot[title={Re=400}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/uGC_N\N_Re400.out}; 
+%            }
+%            \addplot+[only marks] table[x={y}, y={Re400}]{../Results/uGC.ref};
+%
+%            \nextgroupplot[title={Re=1000}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/uGC_N\N_Re1000.out}; 
+%            }
+%            \addplot+[only marks] table[x={y}, y={Re1000}]{../Results/uGC.ref};
+%
+%            \nextgroupplot[title={Re=3200}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/uGC_N\N_Re3200.out}; 
+%            }
+%            \addplot+[only marks, unbounded coords=jump, 
+%            y filter/.expression={y<-0.5 ? nan : y}] 
+%            table[x={y}, y={Re3200}]{../Results/uGC.ref};
+%        \end{groupplot}
+%    \end{tikzpicture}
+%    \caption{First component of velocity through $x=0.5$.}
+%    \label{fig:uGC}
+%\end{figure*}
+%
+%\begin{figure*}[t]
+%    \centering
+%    \tikzsetnextfilename{vSlice}
+%    \begin{tikzpicture}
+%        \begin{groupplot}
+%            [
+%                height=0.8\columnwidth,
+%                width=\columnwidth,
+%                group style=
+%                {
+%                    group size=2 by 2, 
+%                    xlabels at=edge bottom, 
+%                    xticklabels at=edge bottom, 
+%                    ylabels at=edge left, 
+%                    vertical sep=25pt, 
+%                    horizontal sep=25pt
+%                },
+%                xlabel=$x$, xmin=0, xmax=1, 
+%                ylabel=$v$, 
+%                ylabel style={rotate=-90}
+%            ]
+%            \nextgroupplot[title={Re=100}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/vGC_N\N_Re100.out}; 
+%            }
+%            \addplot+[only marks] table[x={x}, y={Re100}]{../Results/vGC.ref};
+%
+%            \nextgroupplot[title={Re=400}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/vGC_N\N_Re400.out}; 
+%            }
+%            \addplot+[only marks] table[x={x}, y={Re400}]{../Results/vGC.ref};
+%
+%            \nextgroupplot[title={Re=1000}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/vGC_N\N_Re1000.out}; 
+%            }
+%            \addplot+[only marks] table[x={x}, y={Re1000}]{../Results/vGC.ref};
+%
+%            \nextgroupplot[title={Re=3200}]
+%            \foreach \N in {17,33,65,129}
+%            {
+%                \addplot+[only marks] table{../Results/vGC_N\N_Re3200.out}; 
+%            }
+%            \addplot+[only marks] table[x={x}, y={Re3200}]{../Results/vGC.ref};
+%        \end{groupplot}
+%    \end{tikzpicture}
+%    \caption{Second component of velocity through $y=0.5$.}
+%    \label{fig:vGC}
+%\end{figure*}
+%
+%\begin{figure*}[t]
+%    \centering
+%    \foreach \Re in {100,400,1000,3200}
+%    {
+%        \pgfplotstableread{../Results/psi_N129_Re\Re.out}{\psi}
+%        \tikzsetnextfilename{Stream_Re\Re}
+%        \begin{tikzpicture}
+%            \begin{axis}
+%            [
+%                title={${\rm Re}=\Re$},
+%                xlabel={$x$}, ylabel={$y$},
+%                xmin=0, xmax=1, ymin=0, ymax=1,
+%                view={0}{90}
+%            ]
+%                \addplot3[surf,shader=interp] table[]{\psi}; 
+%                \addplot3
+%                [
+%                    mesh/rows=128, mesh/cols=128, 
+%                    contour gnuplot=
+%                    {
+%                        labels=false, 
+%                        draw color=black, 
+%                        levels=
+%                        {
+%                            -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07,
+%                            -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5,
+%                            5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3 
+%                        }
+%                    }
+%                ]
+%                table{\psi}; 
+%                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+%                table[each nth point=510]{../Results/vec_N129_Re\Re.out};
+%                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+%                table[each nth point=514]{../Results/vec_N129_Re\Re.out};
+%            \end{axis}
+%        \end{tikzpicture}
+%    }
+%    \caption{Stream function for different Reynold's numbers}
+%    \label{fig:stream}
+%\end{figure*}
+%
+%\begin{figure*}[t]
+%    \centering
+%    \foreach \Re in {100,400,1000,3200}
+%    {
+%        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
+%        \tikzsetnextfilename{Vorticity_Re\Re}
+%        \begin{tikzpicture}
+%            \begin{axis}
+%            [
+%                title={${\rm Re}=\Re$},
+%                xlabel={$x$}, ylabel={$y$},
+%                xmin=0, xmax=1, ymin=0, ymax=1,
+%                point meta min=-6, point meta max=6,
+%                view={0}{90}
+%            ]
+%                \addplot3[surf,shader=interp] table[]{\omega}; 
+%                \addplot3
+%                [
+%                    mesh/rows=128, mesh/cols=128, 
+%                    contour gnuplot=
+%                    {
+%                        labels=false, 
+%                        draw color=black, 
+%                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
+%                    }
+%                ]
+%                table[]{\omega}; 
+%            \end{axis}
+%        \end{tikzpicture}
+%    }
+%    \caption{Vorticity for different Reynold's numbers}
+%    \label{fig:vorticity}
+%\end{figure*}
 
 \subsection{Computational efficiency}
 \label{subsec:efficiency}
