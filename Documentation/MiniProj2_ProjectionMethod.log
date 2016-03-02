@@ -1,4 +1,4 @@
-This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  1 MAR 2016 18:57
+This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  2 MAR 2016 10:40
  \write18 enabled.
 **MiniProj2_ProjectionMethod.tex
 (./MiniProj2_ProjectionMethod.tex
@@ -786,14 +786,22 @@ Underfull \hbox (badness 4024) in paragraph at lines 328--329
 
 ===== Image 'Figures/uSlice' is up-to-date. ======
 ===== Image 'Figures/vSlice' is up-to-date. ======
-PGFPlots: reading {../Results/psi_N33_Re100.out}
+PGFPlots: reading {../Results/psi_N129_Re100.out}
 ===== Image 'Figures/Stream_Re100' is up-to-date. ======
-PGFPlots: reading {../Results/psi_N33_Re400.out}
+PGFPlots: reading {../Results/psi_N129_Re400.out}
 ===== Image 'Figures/Stream_Re400' is up-to-date. ======
-PGFPlots: reading {../Results/psi_N33_Re1000.out}
+PGFPlots: reading {../Results/psi_N129_Re1000.out}
 ===== Image 'Figures/Stream_Re1000' is up-to-date. ======
-PGFPlots: reading {../Results/psi_N33_Re3200.out}
+PGFPlots: reading {../Results/psi_N129_Re3200.out}
 ===== Image 'Figures/Stream_Re3200' is up-to-date. ======
+PGFPlots: reading {../Results/omega_N129_Re100.out}
+===== Image 'Figures/Vorticity_Re100' is up-to-date. ======
+PGFPlots: reading {../Results/omega_N129_Re400.out}
+===== Image 'Figures/Vorticity_Re400' is up-to-date. ======
+PGFPlots: reading {../Results/omega_N129_Re1000.out}
+===== Image 'Figures/Vorticity_Re1000' is up-to-date. ======
+PGFPlots: reading {../Results/omega_N129_Re3200.out}
+===== Image 'Figures/Vorticity_Re3200' is up-to-date. ======
 [1{/opt/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
@@ -804,16 +812,18 @@ Package natbib Warning: Empty `thebibliography' environment on input line 8.
 
 ) [2<./Figures/uSlice.pdf>] [3<./Figures/vSlice.pdf>] [4<./Figures/Stream_Re100.
 pdf><./Figures/Stream_Re400.pdf><./Figures/Stream_Re1000.pdf><./Figures/Stream_R
-e3200.pdf>] (./MiniProj2_ProjectionMethod.aux))
+e3200.pdf>] [5<./Figures/Vorticity_Re100.pdf><./Figures/Vorticity_Re400.pdf><./F
+igures/Vorticity_Re1000.pdf><./Figures/Vorticity_Re3200.pdf>]
+(./MiniProj2_ProjectionMethod.aux))
 
 Here is how much of LuaTeX's memory you used:
- 24584 strings out of 494938
- 100000,794899 words of node,token memory allocated
- 366 words of node memory still in use:
+ 24662 strings out of 494938
+ 100000,1977958 words of node,token memory allocated
+ 367 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 1 kern, 1 glyph, 49 glue_spec, 1 write node
 s
-   avail lists: 2:28,3:178,4:1137,5:119,6:2124,7:18,9:198,10:221
- 27176 multiletter control sequences out of 65536+600000
+   avail lists: 2:28,3:185,4:1175,5:125,6:2183,7:18,9:209,10:226
+ 27182 multiletter control sequences out of 65536+600000
  52 fonts using 2054523 bytes
  55i,6n,83p,721b,288s stack positions out of 5000i,500n,10000p,200000b,100000s
 <</opt/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><</opt/
@@ -825,10 +835,10 @@ ype1/public/amsfonts/cm/cmr8.pfb><</opt/texlive/2015/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmsy10.pfb><</opt/texlive/2015/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmti10.pfb><</opt/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmti8.pfb>
-Output written on MiniProj2_ProjectionMethod.pdf (4 pages, 528258 bytes).
+Output written on MiniProj2_ProjectionMethod.pdf (5 pages, 1471001 bytes).
 
-PDF statistics: 165 PDF objects out of 1000 (max. 8388607)
- 120 compressed objects within 2 object streams
+PDF statistics: 240 PDF objects out of 1000 (max. 8388607)
+ 174 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 131072)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

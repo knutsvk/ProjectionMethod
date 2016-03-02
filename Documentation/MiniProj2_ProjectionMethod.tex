@@ -486,7 +486,7 @@ All results for Re=100,400,1000,3200\ldots\ldots
     \centering
     \foreach \Re in {100,400,1000,3200}
     {
-        \pgfplotstableread{../Results/psi_N33_Re\Re.out}{\psi}
+        \pgfplotstableread{../Results/psi_N129_Re\Re.out}{\psi}
         \tikzsetnextfilename{Stream_Re\Re}
         \begin{tikzpicture}
             \begin{axis}
@@ -499,7 +499,7 @@ All results for Re=100,400,1000,3200\ldots\ldots
                 \addplot3[surf,shader=interp] table[]{\psi}; 
                 \addplot3
                 [
-                    mesh/rows=32, mesh/cols=32, 
+                    mesh/rows=128, mesh/cols=128, 
                     contour gnuplot=
                     {
                         labels=false, 
@@ -514,9 +514,9 @@ All results for Re=100,400,1000,3200\ldots\ldots
                 ]
                 table{\psi}; 
                 \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
-                table[each nth point=126]{../Results/vec_N33_Re\Re.out};
+                table[each nth point=510]{../Results/vec_N129_Re\Re.out};
                 \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
-                table[each nth point=130]{../Results/vec_N33_Re\Re.out};
+                table[each nth point=514]{../Results/vec_N129_Re\Re.out};
             \end{axis}
         \end{tikzpicture}
     }
@@ -524,39 +524,39 @@ All results for Re=100,400,1000,3200\ldots\ldots
     \label{fig:stream}
 \end{figure*}
 
-%\begin{figure*}[t]
-%    \centering
-%    \foreach \Re in {100,400,1000,3200}
-%    {
-%        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
-%        \tikzsetnextfilename{Vorticity_Re\Re}
-%        \begin{tikzpicture}
-%            \begin{axis}
-%            [
-%                title={${\rm Re}=\Re$},
-%                xlabel={$x$}, ylabel={$y$},
-%                xmin=0, xmax=1, ymin=0, ymax=1,
-%                point meta min=-6, point meta max=6,
-%                view={0}{90}
-%            ]
-%                \addplot3[surf,shader=interp] table[]{\omega}; 
-%                \addplot3
-%                [
-%                    mesh/rows=128, mesh/cols=128, 
-%                    contour gnuplot=
-%                    {
-%                        labels=false, 
-%                        draw color=black, 
-%                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
-%                    }
-%                ]
-%                table[]{\omega}; 
-%            \end{axis}
-%        \end{tikzpicture}
-%    }
-%    \caption{Vorticity for different Reynold's numbers}
-%    \label{fig:vorticity}
-%\end{figure*}
+\begin{figure*}[t]
+    \centering
+    \foreach \Re in {100,400,1000,3200}
+    {
+        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
+        \tikzsetnextfilename{Vorticity_Re\Re}
+        \begin{tikzpicture}
+            \begin{axis}
+            [
+                title={${\rm Re}=\Re$},
+                xlabel={$x$}, ylabel={$y$},
+                xmin=0, xmax=1, ymin=0, ymax=1,
+                point meta min=-6, point meta max=6,
+                view={0}{90}
+            ]
+                \addplot3[surf,shader=interp] table[]{\omega}; 
+                \addplot3
+                [
+                    mesh/rows=128, mesh/cols=128, 
+                    contour gnuplot=
+                    {
+                        labels=false, 
+                        draw color=black, 
+                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
+                    }
+                ]
+                table[]{\omega}; 
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Vorticity for different Reynold's numbers}
+    \label{fig:vorticity}
+\end{figure*}
 
 \subsection{Computational efficiency}
 \label{subsec:efficiency}
