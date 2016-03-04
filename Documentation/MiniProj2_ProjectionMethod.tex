@@ -254,7 +254,15 @@ and as such has a singularity for $\dot{\gamma}=0$.
     \centering
     \tikzsetnextfilename{lidDrivenCavity}
     \begin{tikzpicture}
-        
+        \draw[thick,black, fill=blue!10!white] (0,0) rectangle (4,4);
+        \draw[<-] (3,2) arc (0:330:1);
+        \draw[->] (1,4) -- (3,4);
+        \node[anchor=north] at (2,-0.1) {$u=0,\,v=0$};
+        \node[anchor=south] at (2,4.1) {$u=a,\,v=0$};
+        \node[anchor=east] at (-0.1,2.2) {$u=0,$};
+        \node[anchor=east] at (-0.1,1.8) {$v=0$};
+        \node[anchor=west] at (4.1,2.2) {$u=0,$};
+        \node[anchor=west] at (4.1,1.8) {$v=0$};
     \end{tikzpicture}
     \caption{Lid-driven cavity test case.}
     \label{fig:lidDrivenCavity}
