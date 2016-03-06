@@ -356,7 +356,7 @@ and enforcing $\nabla \cdot \bm{u}^{n+1} = 0$, leading to a Poisson equation
 for the pressure:
 
 \begin{equation} 
-    \nabla^2 p^{n+1} = \Delta t \nabla \cdot \tilde{\bm{u}}^{n+1} \,.
+    \nabla^2 p^{n+1} = \frac{1}{\Delta t} \nabla \cdot \tilde{\bm{u}}^{n+1} \,.
     \label{eq:poissonPressure}
 \end{equation}
 %
@@ -501,11 +501,11 @@ By substituting the approximations in Eqns.\ \eqref{eq:firstApprox} -
 matrix equation of the form 
 
 \begin{equation}
-    A_u \tilde{\bf u}^{n+1} = {\bf f}_u + {\bf b}_u \,,
+    A_{uv} \tilde{\bf u} = {\bf f}_u + {\bf b}_u \,,
     \label{eq:xVelocityMatrix}
 \end{equation}
 %
-where $A_u$ is an $N(N-1) \times N(N-1)$ matrix, $\tilde{\bf u}^{n+1}$ is a
+where $A_{uv}$ is an $N(N-1) \times N(N-1)$ matrix, $\tilde{\bf u}$ is a
 vector containing the discrete values of $\tilde{u}^{n+1}$ at each point and ${\bf f}_u$ is a
 load vector depending only on values of $\bm{u}^n$. The
 vector ${\bf b}_u$ takes into consideration the boundary conditions, and
@@ -513,7 +513,7 @@ will be treated shortly. The matrix is a sparse block tridiagonal matrix of the
 form
 
 \begin{equation*}
-    A_u = 
+    A_{uv} = 
     \begin{pmatrix}
         I + \alpha T & -\alpha I \\
         -\alpha I & I + \alpha T & -\alpha I \\
@@ -542,7 +542,7 @@ By the exact same procedure for the second component of Eq.\
 arrives at a similar equation for the intermediate $y$-velocities: 
 
 \begin{equation}
-    A_v \tilde{\bf v}^{n+1} = {\bf f}_v + {\bf b}_v \,,
+    A_{uv} \tilde{\bf v} = {\bf f}_v + {\bf b}_v \,,
     \label{eq:yVelocityMatrix}
 \end{equation}
 
@@ -550,7 +550,7 @@ By comparison, the spatial discretization of Eq.\ \eqref{eq:poissonPressure} is
 straightforward. In discrete form over a control volume, it reads 
 
 \begin{equation}
-    \int_{\Omega_{i,j}} \nabla^2 p^{n+1} {\rm d}V = \Delta t
+    \int_{\Omega_{i,j}} \nabla^2 p^{n+1} {\rm d}V = \frac{1}{\Delta t}
     \int_{\Omega_{i,j}} \nabla \cdot \tilde{\bm{u}}^{n+1} {\rm d}V \,.
 \end{equation}
 %
@@ -579,6 +579,7 @@ We thus end up with a system of linear equations:
 
 \begin{equation}
     A_p {\bf p} = {\bf f}_p + {\bf b}_p \,.
+    \label{eq:pressureMatrix}
 \end{equation}
 %
 In this case, there are $N^2$ variables and unknowns, and the matrix is given
@@ -595,12 +596,73 @@ by
     \end{pmatrix} \,.
 \end{equation*}
 
+Special consideration must be taken near the boundaries of the domain. The
+update formula for an $x$-momentum control volume requires information taken
+from the four nearest $x$-momentum control volumes (north, east, south and
+west) in addition to the four nearest $y$-momentum control volumes (northeast,
+southeast, southwest and northwest). Upon investigation of Figure
+\ref{fig:staggeredGrid}, it is evident that we then need ghost cells for
+$\tilde{u}$ at $i=1/2$, $i=N+1/2$, $j=0$ and $j=N+1$. The first two are given
+immediately by the Dirichlet conditions (no-slip, solid wall), while the latter
+are computed using interpolation. 
+
+
+\begin{align}
+    \nonumber 
+    \tilde{u}_{\frac{1}{2},j}^n &= 0 \,, &\quad \tilde{u}_{N + \frac{1}{2},j}^n
+    &= 0 \,, \\
+    \label{eq:xVelocityBCs}
+    \tilde{u}_{i+\frac{1}{2},0}^n &= - \tilde{u}_{i+\frac{1}{2},1}^n \,, &\quad
+    \tilde{u}_{i+\frac{1}{2},N+1}^n &= 2a - \tilde{u}_{i+\frac{1}{2},N}^n \,.
+\end{align}
+%
+Utilizing the same technique for $\tilde{v}$, we have 
+
+\begin{align}
+    \nonumber
+    \tilde{v}_{i,\frac{1}{2}}^n &= 0 \,, &\quad 
+    \tilde{v}_{i, N + \frac{1}{2}}^n &= 0 \,, \\
+    \label{eq:yVelocityBCs}
+    \tilde{v}_{0, j+\frac{1}{2}}^n &= - \tilde{v}_{1, j+\frac{1}{2}}^n \,,
+    &\quad \tilde{v}_{N+1, j+\frac{1}{2}}^n &= - \tilde{v}_{N, j+\frac{1}{2}}^n
+    \,.
+\end{align}
+
+The boundary condiions for $p$ are less obvious, and have been subject to
+debate in the literature \cite{liu1995projection}. As there are no physical
+boundary conditions on $p$, one could take the inner product of Eq.\
+\eqref{eq:hiRe} with either the unit normal or unit tangent at the boundary,
+and retrieve equally feasile boundary conditions. In general, the former is
+preferred by most people, since the condition relates naturally to the
+projection operator. Requiring that the space of divergence-free vector fields
+is orthogonal to the space of irrotational vector fields results in the boundary
+condition $\bm{u}^{n+1} \cdot \bm{n} = 0$. Taking the inner product of Eq.\
+\eqref{eq:secondStep} with $\bm{n}$ thus gives $\partial_n p = 0$ on the
+domain border. Our boundary conditions for the pressure are then
+
+\begin{align}
+    \nonumber
+    p_{0,j}^{n+1} &= p_{1,j}^{n+1} \,, &\quad p_{i,0}^{n+1} &= p_{i,1}^{n+1}
+    \,, \quad \\
+    \label{eq:pressureBCs}
+    p_{N+1,j}^{n+1} &= p_{N,j}^{n+1} \,, &\quad p_{i,N+1}^{n+1} &=
+    p_{i,N}^{n+1} \,.
+\end{align}
+
+Each of the linear systems in Eqns.\ \eqref{eq:xVelocityMatrix},
+\eqref{eq:yVelocityMatrix} and \eqref{eq:pressureMatrix} are solved using a C++
+template library for linear algebra called Eigen \cite{eigenweb}. Since the
+matrices are sparse, we exploit the special sparse datastructures available in
+Eigen, and solve the systems using a simplicial Cholesky factorization
+($LDL^T$). The choice of factorization is for efficiency, and can be used since
+the sparse matrics are self-adjoint and positive definite. 
+
 \begin{itemize}
-    \item Boundary conditions
-    \item Solving the systems of equations with Eigen
-    \item Choice of time step for stability
+    \item Choice of time step for stability \cite{kress2006time}
     \item Checking if steady-state has been reached
-    \item Define stream function and vorticity.
+    \item Define vorticity and stream function: \\ 
+        $\omega = |\nabla \times \bm{u}| = \partial_x v-\partial_y u\,,$ \\
+        $u=\partial_y \psi,\,v=-\partial_x \psi \implies \omega=-\nabla^2 \psi$
     \item Transforming results to vorticity streamline formulation
 \end{itemize}
 
