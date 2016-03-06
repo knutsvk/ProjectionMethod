@@ -42,6 +42,16 @@
 \author{Knut Sverdrup}
 
 \begin{abstract}
+    In this report, we discuss computational methods for solving the
+    incompressible Navier-Stokes equations in the two-dimensional test case of
+    a lid-driven cavity. For Newtonian fluids, we demonstrate the
+    implementation of a fractional-step projection method for solving the
+    transient problem with high Reynolds numbers, and show that the system
+    converges to the steady-state solution previously documented in the
+    literature. Additionaly, we discuss the case of creeping flow in Bingham
+    plastic fluids, and how the steady-state solution can be computed through
+    the SIMPLE algorithm when regularization is employed to deal with the
+    singularity in apparent viscosity of such fluids. 
 \end{abstract}
 
 \end{frontmatter}
@@ -50,7 +60,7 @@
 \label{sec:introduction}
 
 In physics, few equations span as wide a range of applications as the
-Navier-Stokes equations of fluid dynamics. They govern the motion of viscuous
+Navier-Stokes equations of fluid dynamics. They govern the motion of viscous
 fluids in a continuum framework, and as such have applications in {\em e.g.\ }
 climate modelling \cite{marshall1997finite, giraldo2008study}, aerodynamics
 \cite{rai1987navier, thomas1990navier, jameson1998optimum}, medicinal research
@@ -147,10 +157,10 @@ and multiplying through by $L/(\rho a^2)$ gives the dimensionless equation
 \end{equation}
 %
 Here, ${\rm Re} = \rho a L / \mu$ is the Reynolds number of the flow, which
-equals the ratio of intertial forces to viscuous ones. Note that the pressure
+equals the ratio of intertial forces to viscous ones. Note that the pressure
 is still measured in physical units, as we wish to utilize different scalings
 depending on the Reynolds number. Low Reynolds numbers correspond to laminar
-flow, where the viscuous forces are dominant. In this case, we let $p
+flow, where the viscous forces are dominant. In this case, we let $p
 \rightarrow \frac{\rm Re}{\rho a^2} p$, so that Eq.\ \eqref{eq:dimensionless}
 becomes
 
@@ -250,28 +260,58 @@ from which it is evident that the apparent viscosity
 %
 and as such has a singularity for $\dot{\gamma}=0$. 
 
+As a test framework for our numerical schemes, we apply them to the so-called
+lid-driven cavity problem. The problem has served as a benchmark test for
+viscous, incompressible fluid flow for decades, and reference solutions are
+readily available, notably those produced by Ghia {\em et al.\ } in 1982
+through the vorticity-strem function formulation and multigrid methods
+\cite{ghia1982high}. This test case is fairly simple, and consists of a square
+domain in 2D with sides of length $L$. At all sides, both solid-wall and
+no-slip boundary conditions are applied, so that the component of $\bm{u} =
+(u,v)^T$ normal to the wall is zero on the whole boundary, while the tangential
+component equals the velocity of wall. In the lid-driven cavity test, all walls
+are stationary except the top one (the ``lid''), which moves with constant
+speed $a$. Figure \ref{fig:lidDrivenCavity} exhibits the test case
+schematically. 
+
 \begin{figure}[htb]
     \centering
     \tikzsetnextfilename{lidDrivenCavity}
     \begin{tikzpicture}
         \draw[thick,black, fill=blue!10!white] (0,0) rectangle (4,4);
-        \draw[<-] (3,2) arc (0:330:1);
-        \draw[->] (1,4) -- (3,4);
+
+        \draw[<-,thick] (3,2) arc (0:330:1);
+        \draw[->,thick] (1,4.2) -- (3,4.2);
+        \draw[->] (4,0) -- (5,0) node[right] {$x$};
+        \draw[->] (0,4) -- (0,5) node[above] {$y$};
+
+        \draw[] (4,0) -- (4,-0.1);
+        \draw[] (0,4) -- (-0.1,4);
+        \node[anchor=north] at (4,-0.1) {$L$};
+        \node[anchor=east] at (-0.1,4) {$L$};
+
+        \draw[] (0,0) -- (0,-0.1);
+        \draw[] (0,0) -- (-0.1,0);
+        \node[anchor=north] at (0,-0.1) {0};
+        \node[anchor=east] at (-0.1,0) {0};
+
         \node[anchor=north] at (2,-0.1) {$u=0,\,v=0$};
-        \node[anchor=south] at (2,4.1) {$u=a,\,v=0$};
+        \node[anchor=south] at (2,4.2) {$u=a,\,v=0$};
         \node[anchor=east] at (-0.1,2.2) {$u=0,$};
-        \node[anchor=east] at (-0.1,1.8) {$v=0$};
+        \node[anchor=east] at (-0.2,1.8) {$v=0$};
         \node[anchor=west] at (4.1,2.2) {$u=0,$};
-        \node[anchor=west] at (4.1,1.8) {$v=0$};
+        \node[anchor=west] at (4.12,1.8) {$v=0$};
     \end{tikzpicture}
     \caption{Lid-driven cavity test case.}
     \label{fig:lidDrivenCavity}
 \end{figure}
 
-\begin{itemize}
-    \item Introduce the lid-driven cavity test problem, explain what has been
-        done in the literature. 
-\end{itemize}
+In Section \ref{sec:numerical}, the numerical methods employed to solve the
+incompressible Navier-Stokes equations for Newtonian fluids in the lid-driven
+cavity are explained, in addition to the extensions needed for creeping flow of
+Bingham plastics. Section \ref{sec:results} contains our results, which are the
+basis of the discussion following in Section \ref{sec:discussion}. Section
+\ref{sec:conclusion} concludes the report. 
 
 \section{Numerical methods}
 \label{sec:numerical}
@@ -279,13 +319,286 @@ and as such has a singularity for $\dot{\gamma}=0$.
 \subsection{Newtonian fluid}
 \label{subsec:newtonian}
 
+In order to solve the transient problem given by Eqns.\ \eqref{eq:hiRe} and
+\eqref{eq:incompressibility}, we implement a fractional-step projection method
+following section 10.3 of Oleg Zikanov's {\em Essential Computational Fluid
+Dynamics} \cite{zikanov2010essential}. The original projection method for
+Navier-Stokes equations was invented by Chorin in 1968
+\cite{chorin1968numerical}, and the essence is still the same in modern
+variants. It is an operator splitting approach, in which, for each time step,
+one first performs an intermediate time step while ignoring the pressure
+forces, and then ignores the viscous forces in the second time step.
+Temporal discretization of Eq. \eqref{eq:hiRe} is done explicitly for the
+nonlinear term and implicitly for the linear ones, yielding the two equations 
+
+\begin{align}
+    \label{eq:firstStep}
+    \frac{\tilde{\bm{u}}^{n+1} - \bm{u}^n}{\Delta t} + \bm{u}^n \cdot \nabla
+    \bm{u}^n - \frac{1}{\rm Re} \nabla^2 \tilde{\bm{u}}^{n+1} &= 0 \,, \\
+    \label{eq:secondStep}
+    \frac{\bm{u}^{n+1} - \tilde{\bm{u}}^{n+1}}{\Delta t} + \nabla p^{n+1} &= 0
+    \,,
+\end{align}
+%
+which reduce to the discrete version of Eq. \eqref{eq:hiRe} when added
+together. Here, we have introduced the notation $\bm{u}^n = \bm{u}(n \Delta
+t)$, in addition to denoting by $\tilde{\bm{u}}^{n+1}$ the velocity at the
+intermediate time step.  It is particularly important to utilize the implicit
+temporal discretization for flows with low Reynolds numbers and for meshes that
+are stretched near boundaries, since otherwise the numerical viscous stability
+restriction becomes severe in these cases. 
+
+Given a suitable spatial discretization scheme, Eq.\ \eqref{eq:firstStep} is
+straightforward to solve since there is one known ($\bm{u}^n$) and one unknown
+($\tilde{\bm{u}}^{n+1}$) quantity. The second step, however, has two unknowns.
+This problem is solved by taking the divergence of Eq. \eqref{eq:secondStep}
+and enforcing $\nabla \cdot \bm{u}^{n+1} = 0$, leading to a Poisson equation
+for the pressure:
+
+\begin{equation} 
+    \nabla^2 p^{n+1} = \Delta t \nabla \cdot \tilde{\bm{u}}^{n+1} \,.
+    \label{eq:poissonPressure}
+\end{equation}
+%
+By doing so, the intermediate, unphysical velocity, which was computed without
+enforcing incompressibility, is projected onto the space of vector fields
+satistfying Eq.\ \eqref{eq:incompressibility}. Note that the boundary
+conditions are also affected by taking the divergence, as by doing so the
+Dirichlet conditions are transformed to Neumann type. 
+
+The velocity at time $t^{n+1}$ can finally be updated by rearranging Eq.\
+\eqref{eq:secondStep} to read 
+
+\begin{equation}
+    \bm{u}^{n+1} = \tilde{\bm{u}}^{n+1} + \Delta t \nabla p^{n+1} \,. 
+    \label{eq:velocityUpdate}
+\end{equation}
+
+Spatial discretization is done through finite volumes with a staggered grid,
+{\em i.e.\ } a grid where the three primitive variables are evaluated at
+different points.  The need for a staggered grid is due to the relationship
+between pressure and velocity. On a regular grid, a checkerboard pattern occurs
+in their dependencies upon each other, leading to decoupling and thus spurious
+pressure instabilities.  Our domain is split into $N$ equal subdomains for
+pressure in each spatial direction, leading to a total of $N^2$ subdomains of
+area $\Delta x^2$, where $\Delta x = 1/N$ (we employ the same grid spacing in
+both directions). In the centre of each of these squares, the pressure is
+evaluated, while the $x$- and $y$-components of velocity are evaluated on their
+vertical and horizontal borders, respectively.  Consequently, the control
+volumes for the first and second components of the momentum balance equations
+in the finite volume method are shifted by $\frac{1}{2} \Delta x$ compared to
+the control volumes used for the Poisson equation for pressure. The staggered
+grid with shifted control volumes is illustrated in Figure
+\ref{fig:staggeredGrid}.
+
+\begin{figure}[htb]
+    \centering
+    \tikzsetnextfilename{staggeredGrid}
+    \begin{tikzpicture}
+        \draw[thick,black] (0,0) rectangle (5,5);
+        \draw[->] (-0.1,0) -- (5.5,0) node[right] {$x$};
+        \draw[->] (0,-0.1) -- (0,5.5) node[above] {$y$};
+        \node at (0.5,-0.5) {\footnotesize $i=1$};
+        \node at (1.5,-0.5) {\footnotesize $i=2$};
+        \node at (3,-0.5) {\footnotesize $\cdots$};
+        \node at (4.5,-0.5) {\footnotesize $i=N$};
+        \node at (-0.5,0.5) {\footnotesize $j=1$};
+        \node at (-0.5,1.5) {\footnotesize $j=2$};
+        \node at (-0.5,3) {\footnotesize $\vdots$};
+        \node at (-0.5,4.5) {\footnotesize $j=N$};
+
+        \draw[ultra thick,blue] (1,1) rectangle (2,2);
+        \draw[ultra thick,dotted,green!50!black] (2.5,1) rectangle (3.5,2);
+        \draw[ultra thick,dashed,red] (1,2.5) rectangle (2,3.5);
+
+        \foreach \i in {1,...,4} {
+            \draw (\i,0) -- (\i,5);
+            \draw (0,\i) -- (5,\i);
+        }
+
+        \foreach \i in {0,...,4} {
+            \foreach \j in {0,...,4} 
+            {
+                \node at (\i+0.5,\j+0.5) {\color{blue}{$\circ$}};
+            }
+        }
+
+        \foreach \i in {0,...,3} {
+            \foreach \j in {0,...,4} 
+            {
+                \node at (\i+1,\j+0.5) {\color{green!50!black}{$\times$}};
+                \node at (\j+0.5,\i+1) {\color{red}{$*$}};
+            }
+        }
+
+
+    \end{tikzpicture}
+    \caption
+    {
+        Spatial discretization of the square domain with a staggered grid. At the different
+        points, the primitive variables are evaluated: \textcolor{blue}{$\circ$}
+        $p$, \textcolor{green!50!black}{$\times$} $u$, \textcolor{red}{$*$}
+        $v$. Examples of control volumes for pressure ($i=2$, $j=2$),
+        $x$-velocity ($i=3.5$, $j=2$) and $y$-velocity ($i=2$,$j=2.5$) are also
+        shown with corresponding colors. In this example, $N=5$. 
+    }
+    \label{fig:staggeredGrid}
+\end{figure}
+
+We denote by $\Omega_{i,j}$ the control volume centred at
+$(x_i,y_j)=\left(i\Delta x - 1/2, j\Delta x - 1/2\right)$. In
+integral form over a control volume centred at a $u$-point, the first component
+of Eq.\ \eqref{eq:firstStep} reads 
+
+\begin{multline}
+    \int_{\Omega_{i+\frac{1}{2},j}} \tilde{u}^{n+1} {\rm d}V - \frac{\Delta t}{\rm Re}
+    \int_{\Omega_{i+\frac{1}{2},j}} \nabla^2 \tilde{u}^{n+1} {\rm d}V \\
+    = \int_{\Omega_{i+\frac{1}{2},j}} u^n {\rm d}V + \Delta t
+    \int_{\Omega_{i+\frac{1}{2},j}} (u^n \partial_x u^n + v^n \partial_y u^n)
+    {\rm d}V \,.
+    \label{eq:velocityIntegralForm}
+\end{multline}
+%
+We approximate the first term on each side of the equation by the
+two-dimensional midpoint rule, {\em i.e.\ } 
+
+\begin{equation}
+    \int_{\Omega_{i+\frac{1}{2},j}} \tilde{u}^{n+1} {\rm d}V \approx
+    \tilde{u}_{i+\frac{1}{2},j}^{n+1} (\Delta x)^2 \,, 
+    \label{eq:firstApprox}
+\end{equation}
+%
+and similar for $u^n$. Derivatives are approximated by central differences, and
+when evaluation of a variable is necessary at a point where it is not defined,
+the mean value of the nearest neighbours to the point is taken instead. Thus,
+the integral in the term with the Laplacian becomes 
+
+\begin{multline}
+    \int_{\Omega_{i+\frac{1}{2},j}} \nabla^2 \tilde{u}^{n+1} {\rm d}V =
+    \int_{\partial \Omega_{i+\frac{1}{2},j}} \partial_n \tilde{u}^{n+1} 
+    {\rm d}S \\
+    \approx \tilde{u}_{i+\frac{3}{2},j}^{n+1} +
+    \tilde{u}_{i+\frac{3}{2},j}^{n+1} + \tilde{u}_{i+\frac{3}{2},j}^{n+1} +
+    \tilde{u}_{i+\frac{3}{2},j}^{n+1} - 4\tilde{u}_{i+\frac{3}{2},j}^{n+1} \,, 
+\end{multline}
+%
+while the integrals in the nonlinear term are approximated as 
+
+\begin{align}
+    \int_{\Omega_{i+\frac{1}{2},j}} u^n \partial_x u^n {\rm d}V \approx
+    u_{i+\frac{1}{2},j}^n \frac{1}{2} (u_{i+\frac{3}{2},j}^n -
+    u_{i-\frac{1}{2},j}^n) \Delta x \,, \\
+    \nonumber 
+    \int_{\Omega_{i+\frac{1}{2},j}} v^n \partial_y u^n {\rm d}V \approx
+    \frac{1}{2}(u_{i+\frac{1}{2},j+1}^n-u_{i+\frac{1}{2},j-1}^n) \Delta x \\ 
+    \label{eq:lastApprox}
+    \times \frac{1}{4} (v_{i+1,j+\frac{1}{2}}^n + v_{i+1,j-\frac{1}{2}}^n +
+    v_{i+1,j+\frac{1}{2}}^n + v_{i+1,j-\frac{1}{2}}^n) \,.
+\end{align}
+%
+By substituting the approximations in Eqns.\ \eqref{eq:firstApprox} -
+\eqref{eq:lastApprox} in Eq.\ \eqref{eq:velocityIntegralForm}, we arrive at a
+matrix equation of the form 
+
+\begin{equation}
+    A_u \tilde{\bf u}^{n+1} = {\bf f}_u + {\bf b}_u \,,
+    \label{eq:xVelocityMatrix}
+\end{equation}
+%
+where $A_u$ is an $N(N-1) \times N(N-1)$ matrix, $\tilde{\bf u}^{n+1}$ is a
+vector containing the discrete values of $\tilde{u}^{n+1}$ at each point and ${\bf f}_u$ is a
+load vector depending only on values of $\bm{u}^n$. The
+vector ${\bf b}_u$ takes into consideration the boundary conditions, and
+will be treated shortly. The matrix is a sparse block tridiagonal matrix of the
+form
+
+\begin{equation*}
+    A_u = 
+    \begin{pmatrix}
+        I + \alpha T & -\alpha I \\
+        -\alpha I & I + \alpha T & -\alpha I \\
+        & & \ddots \\
+        & & -\alpha I & I + \alpha T & -\alpha I \\
+        & & & -\alpha I & I + \alpha T
+    \end{pmatrix} \,,
+\end{equation*}
+%
+where $\alpha = \frac{\Delta t}{{\rm Re}(\Delta x)^2}$, $I$ is the identity
+matrix and
+
+\begin{equation*}
+    T = 
+    \begin{pmatrix}
+        4 & -1 \\
+        -1 & 4 & -1 \\
+        & & \ddots \\ 
+        & & -1 & 4 & -1 \\
+        & & & -1 & 4
+    \end{pmatrix} \,.
+\end{equation*}
+
+By the exact same procedure for the second component of Eq.\
+\eqref{eq:firstStep}, using control volumes $\Omega_{i,j+\frac{1}{2}}$, one
+arrives at a similar equation for the intermediate $y$-velocities: 
+
+\begin{equation}
+    A_v \tilde{\bf v}^{n+1} = {\bf f}_v + {\bf b}_v \,,
+    \label{eq:yVelocityMatrix}
+\end{equation}
+
+By comparison, the spatial discretization of Eq.\ \eqref{eq:poissonPressure} is
+straightforward. In discrete form over a control volume, it reads 
+
+\begin{equation}
+    \int_{\Omega_{i,j}} \nabla^2 p^{n+1} {\rm d}V = \Delta t
+    \int_{\Omega_{i,j}} \nabla \cdot \tilde{\bm{u}}^{n+1} {\rm d}V \,.
+\end{equation}
+%
+We discretize the pressure term as 
+
+\begin{align}
+    \nonumber
+    \int_{\Omega_{i,j}} & \nabla^2 p^{n+1} {\rm d}V = 
+    \int_{\partial \Omega_{i,j}} \nabla p^{n+1} \cdot {\rm d}\bm{S} \\
+    \approx& p_{i+1,j}^{n+1} + p_{i,j-1}^{n+1} + p_{i-1,j}^{n+1} +
+    p_{i,j+1}^{n+1} -4 p_{i,j}^{n+1} \,,
+\end{align}
+%
+while the term containing the intermediate velocity becomes 
+
+\begin{align}
+    \nonumber
+    \int_{\Omega_{i,j}} & \nabla \cdot \tilde{\bm{u}}^{n+1} {\rm d}V = 
+    \int_{\partial \Omega_{i,j}} \tilde{\bm{u}}^{n+1} \cdot {\rm d}\bm{S} \\
+    \approx& (\tilde{u}_{i+\frac{1}{2},j}^{n+1} -
+    \tilde{u}_{i-\frac{1}{2},j}^{n+1} + \tilde{v}_{i,j+\frac{1}{2}}^{n+1} -
+    \tilde{v}_{i,j-\frac{1}{2}}^{n+1}) \Delta x \,.
+\end{align}
+%
+We thus end up with a system of linear equations: 
+
+\begin{equation}
+    A_p {\bf p} = {\bf f}_p + {\bf b}_p \,.
+\end{equation}
+%
+In this case, there are $N^2$ variables and unknowns, and the matrix is given
+by 
+
+\begin{equation*}
+    A_p = 
+    \begin{pmatrix}
+        -T & I \\
+        I & -T & I \\
+        & & \ddots \\ 
+        & & I & -T & I \\
+        & & & I & -T
+    \end{pmatrix} \,.
+\end{equation*}
+
 \begin{itemize}
-    \item (Fractional step) projection methods 
-    \item Spatial discretization: the finite volume method
-    \item Remember staggered grid!
     \item Boundary conditions
-    \item Choice of time step for stability
     \item Solving the systems of equations with Eigen
+    \item Choice of time step for stability
     \item Checking if steady-state has been reached
     \item Define stream function and vorticity.
     \item Transforming results to vorticity streamline formulation
@@ -296,12 +609,12 @@ and as such has a singularity for $\dot{\gamma}=0$.
 
 \begin{itemize}
     \item Transient solution possible, cite appropriate paper and explain
-        difficulty in discretizing the viscuous term
+        difficulty in discretizing the viscous term
     \item Reynolds number zero leads to removal of time-dependency because of
         alternative nondimensionalization of pressure 
     \item Treatment of singularity in effective viscosity: regularization
     \item Finite volume method w/o need for staggered grid, discretization of
-        viscuous term
+        viscous term
     \item Solution of steady-state system: SIMPLE and its extensions
 \end{itemize}
 
@@ -319,15 +632,6 @@ and as such has a singularity for $\dot{\gamma}=0$.
 
 \subsection{Steady-state solution}
 \label{subsec:steady}
-
-All results for Re=100,400,1000,3200\ldots\ldots
-
-\begin{itemize}
-    \item 1D slices in the geometric center, including Ghia's results
-    \item Stram lines and velocity vector fields
-    \item Vorticity 
-    \item (Pressure field)!
-\end{itemize}
 
 %\begin{figure*}[t]
 %    \centering
