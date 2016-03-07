@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     double a = 1.0;            // Velocity of lid
     double dx = 1.0/N;         // Grid spacing
     double t = 0.0;            // Time counter
-    double dt = 1e2*dx/Re;// Time step TODO: check stability
+    double dt = 100*dx/Re;// Time step TODO: check stability
     double tol = 1e-9;
 
     ofstream fs;           // File stream for writing res
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     VectorXd psi = solver_psi.solve(omega);
 
     // Print results to file
-
+/*
     sprintf(filename, "../Results/psi_N%d_Re%d.out", N, int(Re));
     fs.open(filename, std::fstream::out);
     for(i=0; i<N-1; i++)
@@ -174,5 +174,5 @@ int main(int argc, char* argv[])
                 << u[i*N+j] << "\t" << v[j*N+i] << "\n";
         }
     }
-    fs.close();
+    fs.close(); */
 }
