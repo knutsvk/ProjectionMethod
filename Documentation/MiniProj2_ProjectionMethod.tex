@@ -48,10 +48,10 @@
     implementation of a fractional-step projection method for solving the
     transient problem with high Reynolds numbers, and show that the system
     converges to the steady-state solution previously documented in the
-    literature. Additionaly, we discuss the case of creeping flow in Bingham
-    plastic fluids, and how the steady-state solution can be computed through
-    the SIMPLE algorithm when regularization is employed to deal with the
-    singularity in apparent viscosity of such fluids. 
+    literature. Additionaly, we discuss the case of Reynolds number zero in
+    Bingham plastic fluids, and how the steady-state solution can be computed
+    through the SIMPLE algorithm when regularization is employed to deal with
+    the singularity in apparent viscosity of such fluids. 
 \end{abstract}
 
 \end{frontmatter}
@@ -227,6 +227,7 @@ illustrates the different types of fluids.
                 {\footnotesize Pseudoplastic};
         \end{axis}
         \node[anchor=south] at (-0.3,2.1) {$B$};
+        \draw (-0.1,2.335) -- (0,2.335);
     \end{tikzpicture}
     \caption{Classification of fluids based on apparent viscosity.}
     \label{fig:fluids}
@@ -696,10 +697,10 @@ t < \Delta t_m$.
 
 If the system converges to steady-state behaviour, the change in the primitive
 variables will approach zero. We therefore set a tolerance $\epsilon$ and
-advance the system in time until the Euclidean norm of the difference in the
-vector of discrete velocity values becomes smaller than that tolerance.
-In other words, we require $||{\bf u}^{n+1} - {\bf u}^{n}|| < \epsilon$ for
-convergence. 
+advance the system in time until the relative change in the uniform norm of
+the vector of discrete velocity values becomes smaller than that tolerance.  In
+other words, we require $\frac{||{\bf u}^{n+1} - {\bf u}^{n}||_{\infty}}{||{\bf
+u}^{n+1}||_{\infty}} < \epsilon$ for convergence. 
 
 \subsubsection{Vorticity and stream function formulation}
 
@@ -748,6 +749,65 @@ conditions.
 \subsection{Bingham plastic fluid}
 \label{subsec:bingham}
 
+Extension of the 2D Navier-Stokes solver to the particular case of
+Non-Newtonian fluids known as Bingham plastics introduces two difficulties.
+Firstly, the discretization of the viscous term is cumbersome. As introduced in
+Section \ref{sec:introduction}, the viscous term $\nabla^2 \bm{u}$ is replaced
+by $\nabla \cdot \bm{\tau}$ for these fluids, where 
+
+\begin{equation} 
+    \bm{\tau} = \eta(\dot{\gamma}) \bm{\dot{\gamma}} = \left(
+    \frac{B}{\dot{\gamma}} + 1 \right) \dot{\bm{\gamma}} \,.
+    \label{eq:binghamStress}
+\end{equation}
+%
+It is not possible to discretize this term implicitly in time while retaining
+the linearity of the system for $\tilde{\bm{u}}^{n+1}$. Secondly, the
+singularity of the apparent viscosity for $\dot{\gamma}=0$ cannot be handled
+directly computationally. 
+
+\subsubsection{Creeping flow}
+
+An idea for circumventing the first of these problems is to discretize the
+fluid strain rate tensor implicitly while accepting an explicit temporal
+discretization for the strain rate magnitude in the apparent viscosity, in
+other words pursuing a discretization such as $\bm{\tau}^{n+\frac{1}{2}} =
+\eta(\dot{\gamma}^{n}) \dot{\bm{\gamma}}^{n+1}$. This would result in a
+solvable system of equations. As we restrict ourselves to the case of creeping
+flows (${\rm Re}=0$), however, this problem vanishes automatically. Equation
+\eqref{eq:loRe} applied to the case of Bingham plastic fluids reads 
+
+\begin{equation}
+    {\rm Re} \left( \partial_t \bm{u} + \bm{u} \cdot \nabla \bm{u} \right)  = -
+    \nabla p + \nabla \cdot \eta ( \dot{\gamma} ) \dot{\bm{\gamma}} \,,
+\end{equation}
+%
+but when ${\rm Re} \rightarrow 0$, the left side of the equation vanishes and we are left
+with the problem of solving 
+
+\begin{equation}
+    \nabla p = \nabla \cdot \eta ( \dot{\gamma} ) \dot{\bm{\gamma}} 
+    \label{eq:binghamPDE}
+\end{equation}
+%
+under the incompressibility criterion of Eq.\ \eqref{eq:incompressibility}. We
+therefore only make a note that computational solutions exist for Bingham
+plastics in the unsteady case (see {\em e.g.\ } Vola {\em et al.\ }
+\cite{vola2003laminar}), and concentrate our efforts on the steady-state case
+when Eq.\ \eqref{eq:binghamPDE} is satisfied. 
+
+\subsubsection{Regularization}
+
+\begin{itemize}
+    \item Treatment of singularity in effective viscosity: regularization
+        \cite{papanastasiou1987flows}. Physical interpretation: replace
+        ``solid'' in unyielded zone by high-viscostiy fluid. 
+\end{itemize}
+
+\begin{equation}
+    \eta = \frac{B}{\dot{\gamma}} \left(1-e^{-m\dot{\gamma}} \right) + 1
+\end{equation}
+
 \begin{figure}[htb]
     \centering
     \tikzsetnextfilename{Regularization}
@@ -757,37 +817,44 @@ conditions.
                 width=0.8\columnwidth,
                 height=0.6\columnwidth,
                 axis x line=bottom, 
-                xlabel=$\dot{\gamma}$, xmin=0, xmax=1,
-                domain=0:1,
+                xlabel=$\dot{\gamma}$, xmin=0, xmax=0.8,
+                domain=0:0.8,
                 x label style={at={(1.05,0)}},
                 axis y line=left,
                 ylabel=$\tau$, ymin=0, ymax=2,
                 y label style={at={(0,1.05)}},
                 ylabel style={rotate=-90},
                 ticks=none,
-                samples=400
+                samples=500
             ]
-            \foreach \m in {4,8,16,32,64,128,256}
-            {
-                \addplot[mark=none,color=black!60!white]{x+1-exp(-\m*x)};
-            }
+            \addplot[mark=none,color=blue!30!white]{x+1-exp(-4*x)};
+            \addplot[mark=none,color=blue!40!white]{x+1-exp(-8*x)};
+            \addplot[mark=none,color=blue!50!white]{x+1-exp(-16*x)};
+            \addplot[mark=none,color=blue!60!white]{x+1-exp(-32*x)};
+            \addplot[mark=none,color=blue!70!white]{x+1-exp(-64*x)};
+            \addplot[mark=none,color=blue!80!white]{x+1-exp(-128*x)};
+            \addplot[mark=none,color=blue!90!white]{x+1-exp(-256*x)};
             \addplot[mark=none,color=black]{x+1};
         \end{axis}
-        \node[anchor=south] at (-0.3,2.1) {$B$};
+        \node[anchor=south] at (-0.3,1.3) {$B$};
+        \draw (-0.07,1.55) -- (0,1.55) {};
     \end{tikzpicture}
     \caption{Regularization technique to mimic the behaviour of Bingham
+        ``plastic'' 
     plastics.}
     \label{fig:regularization}
 \end{figure}
 
+\subsubsection{Spatial discretization}
+
 \begin{itemize}
-    \item Transient solution possible, cite appropriate paper and explain
-        difficulty in discretizing the viscous term
-    \item Reynolds number zero leads to removal of time-dependency because of
-        alternative nondimensionalization of pressure 
-    \item Treatment of singularity in effective viscosity: regularization
     \item Finite volume method w/o need for staggered grid, discretization of
         viscous term
+\end{itemize}
+
+\subsubsection{SIMPLE and friends}
+
+\begin{itemize}
     \item Solution of steady-state system: SIMPLE and its extensions
 \end{itemize}
 

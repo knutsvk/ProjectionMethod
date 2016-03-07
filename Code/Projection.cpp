@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     double dx = 1.0/N;         // Grid spacing
     double t = 0.0;            // Time counter
     double dt = 100*dx/Re;// Time step TODO: check stability
-    double tol = 1e-9;
+    double tol = 1e-6;
 
     ofstream fs;           // File stream for writing res
     char filename[50];
@@ -64,10 +64,10 @@ int main(int argc, char* argv[])
     SimplicialLDLT<SparseMatrix<double> > solver_psi;
     solver_psi.compute(Sp_A_psi);
 
-    cout << "iter" << "\t" << "time" << "\t" << "||u_c||" << "\n";
+    cout << "iter" << "\t" << "time" << "\t" << "||u_c||" << "\t" << "relCha" << "\n";
 
     int iter = 0;
-    while(eps.squaredNorm()>tol)
+    while(eps.lpNorm<Infinity>()/u.lpNorm<Infinity>()>tol)
     {
         // Compute rhs for update formula for x-velocity
         updateLoadU(u, v, N, dt, a, Re, f_U);
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 
         if(iter%10==0)
             cout << iter << "\t" << iter*dt << "\t" 
-                << eps.squaredNorm() << "\n";
+                << eps.squaredNorm() << "\t" << eps.lpNorm<Infinity>()/u.lpNorm<Infinity>() << "\n";
     }
 
     cout << "Steady state reached." << endl;

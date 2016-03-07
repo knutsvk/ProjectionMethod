@@ -1,4 +1,4 @@
-This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.10.31)  3 MAR 2016 16:03
+This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.10.31)  7 MAR 2016 20:06
  \write18 enabled.
 **\def\tikzexternalrealjob{MiniProj2_ProjectionMethod}\input{MiniProj2_Projecti
 onMethod}
@@ -835,15 +835,15 @@ ABD: EveryShipout initializing macros
 Package pgfplots notification 'compat/show suggested version=true': document has
  been generated with the most recent feature set (\pgfplotsset{compat=1.12}).
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 47.
+LaTeX Font Info:    Try loading font information for U+msa on input line 57.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 47.
+LaTeX Font Info:    Try loading font information for U+msb on input line 57.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 2119) in paragraph at lines 69--71
+Underfull \hbox (badness 2119) in paragraph at lines 79--81
 [][]\OT1/cmr/m/n/10 The gen-er-al-ized Navier-Stokes equa-tions are
  []
 
@@ -856,34 +856,57 @@ Missing character: There is no   (U+00A0) in font cmr10!
 
 {/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 Missing character: There is no   (U+00A0) in font cmr10!
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 252.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+
+Overfull \hbox (10.19379pt too wide) detected at line 464
+ []$[] \OT1/cmr/m/n/10 = [][] \OML/cmm/m/it/10 u[]\OT1/cmr/m/n/10 d\OML/cmm/m/i
+t/10 V \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 t [][]\OT1/cmr/m/n/10 (\OML/cmm/m/it
+/10 u[]@[]u[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 v[]@[]u[]\OT1/cmr/m/n/10 )d\OM
+L/cmm/m/it/10 V :$ []  
+ []
+
+Missing character: There is no   (U+00A0) in font cmr10!
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 518.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 252.
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 518.
+Missing character: There is no   (U+00A0) in font cmr10!
+Missing character: There is no   (U+00A0) in font cmr10!
 
-Underfull \hbox (badness 4024) in paragraph at lines 266--267
-[][]\OT1/cmr/m/n/10 Spa-tial dis-cretiza-tion: the fi-nite vol-ume
+Underfull \hbox (badness 1565) in paragraph at lines 698--704
+[][]\OT1/cmr/m/n/10 If the sys-tem con-verges to steady-state be-
  []
 
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 790.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
 No file Figures/Fluids.bbl.
 )
 
 Here is how much of LuaTeX's memory you used:
- 24909 strings out of 494693
+ 24957 strings out of 494693
  100000,1144653 words of node,token memory allocated
- 439 words of node memory still in use:
-   6 hlist, 2 vlist, 2 rule, 2 glue, 11 kern, 1 glyph, 48 glue_spec, 1 write nod
-es
-   avail lists: 2:45,3:2249,4:1282,5:336,6:4128,7:208,9:335,10:362
- 27627 multiletter control sequences out of 65536+600000
- 49 fonts using 1936627 bytes
+ 583 words of node memory still in use:
+   7 hlist, 2 vlist, 2 rule, 2 glue, 22 kern, 8 sub_mlist, 1 glyph, 49 glue_spec
+, 1 write nodes
+   avail lists: 2:45,3:2311,4:1434,5:467,6:4057,7:263,9:970,10:375
+ 27655 multiletter control sequences out of 65536+600000
+ 69 fonts using 2721771 bytes
  57i,13n,100p,792b,2039s stack positions out of 5000i,500n,10000p,200000b,100000s
 <</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
 </usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><</
 usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-Output written on Figures/Fluids.pdf (1 page, 44734 bytes).
+Output written on Figures/Fluids.pdf (1 page, 44754 bytes).
 
 PDF statistics: 23 PDF objects out of 1000 (max. 8388607)
  16 compressed objects within 1 object stream
