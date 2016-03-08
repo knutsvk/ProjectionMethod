@@ -23,7 +23,6 @@
 \pgfplotsset
 {   
     cycle list name=knuts, 
-    colormap name={viridis},
     width=.9\columnwidth, 
     height=.9\columnwidth, 
     compat=1.12
@@ -318,6 +317,7 @@ basis of the discussion following in Section \ref{sec:discussion}. Section
 \label{sec:numerical}
 
 \subsection{Newtonian fluid}
+\label{subsec:newtonian}
 
 \subsubsection{Projection method}
 
@@ -672,22 +672,22 @@ on the time step $\Delta t$ necessary to achieve stability. For a nonlinear
 scheme such as the one employed, analytical stability restrictions are not
 available to the best knowledge of the author, but it is still possible to
 gather some insights from investigating the scheme. The restrictions on $\Delta
-t$ are dependent on $\alpha = \frac{\Delta t}{{\rm Re} (\Delta x)^2}$ from the 
-diffusive term and $\beta = \frac{a \Delta t}{\Delta x}$ from the convective
-one. A possibility is therefore to choose $\Delta t$ as a constant times the
-minimum of these two restrictors, {\em i.e.\ } 
+t$ are dependent on $\alpha = \frac{\Delta t}{{\rm Re} (\Delta x)^2}$ from the
+diffusive term and $\beta = \frac{||{\bf u}||_{\infty} \Delta t}{\Delta x}$
+from the convective one. A possibility is therefore to choose $\Delta t$ as a
+constant times the minimum of these two restrictors, {\em i.e.\ } 
 
 \begin{equation}
-    \Delta t = C \min \left\{ \frac{\Delta x}{a}, {\rm Re} (\Delta x)^2
+    \Delta t = C \min \left\{ \frac{\Delta x}{||{\bf u}||_{\infty}}, {\rm Re} (\Delta x)^2
     \right\} \,.
     \label{eq:timeStep}
 \end{equation}
  
 Another approach is to perform stability analysis on a linearized version of
 the scheme, and transfer the knowledge to the application of the nonlinear
-method. It has been shown that the general form of the dependency of $\Delta
-t$ on $\Delta x$, $a$ and ${\rm Re}$ is predicted only somewhat correctly from
-this type of procedure \cite{kress2006time}. 
+method. It has been shown that the general form of the dependency of $\Delta t$
+on $\Delta x$, $||{\bf u}||_{\infty}$ and ${\rm Re}$ is predicted only somewhat
+correctly from this type of procedure \cite{kress2006time}. 
 
 Since no thorough analysis is possible, we have chosen to do a numerical
 trial-and-error experiment to find the maximum time step $\Delta t_m$ which
@@ -697,10 +697,10 @@ t < \Delta t_m$.
 
 If the system converges to steady-state behaviour, the change in the primitive
 variables will approach zero. We therefore set a tolerance $\epsilon$ and
-advance the system in time until the relative change in the uniform norm of
-the vector of discrete velocity values becomes smaller than that tolerance.  In
-other words, we require $\frac{||{\bf u}^{n+1} - {\bf u}^{n}||_{\infty}}{||{\bf
-u}^{n+1}||_{\infty}} < \epsilon$ for convergence. 
+advance the system in time until the relative change in the uniform norm of the
+vector of discrete velocity values becomes smaller than that tolerance.  In
+other words, we require $\frac{||{\bf u}^{n+1} - {\bf u}^{n}||_{\infty}}{
+||{\bf u}^{n+1}||_{\infty}} < \epsilon$ for convergence. 
 
 \subsubsection{Vorticity and stream function formulation}
 
@@ -792,21 +792,36 @@ with the problem of solving
 %
 under the incompressibility criterion of Eq.\ \eqref{eq:incompressibility}. We
 therefore only make a note that computational solutions exist for Bingham
-plastics in the unsteady case (see {\em e.g.\ } Vola {\em et al.\ }
-\cite{vola2003laminar}), and concentrate our efforts on the steady-state case
-when Eq.\ \eqref{eq:binghamPDE} is satisfied. 
+plastics in the transient case (see {\em e.g.\ } Vola {\em et al.\ }
+\cite{vola2003laminar} or Muravleva \cite{muravleva2015uzawa}), and concentrate
+our efforts on the steady-state case when Eq.\ \eqref{eq:binghamPDE} is
+satisfied.
 
 \subsubsection{Regularization}
 
-\begin{itemize}
-    \item Treatment of singularity in effective viscosity: regularization
-        \cite{papanastasiou1987flows}. Physical interpretation: replace
-        ``solid'' in unyielded zone by high-viscostiy fluid. 
-\end{itemize}
+In order to deal with the singularity in apparent viscosity, a well-tested
+technique is regularization. The idea is to replace the discontinuity with a
+smooth function which mimics its behaviour. One such regularization technique
+which has been used extensively in the literature \cite{mitsoulis2001flow, syrakos2013solution, syrakos2014performance}
+is named after Papanastasiou, who authored a paper on it in 1987
+\cite{papanastasiou1987flows}. Papanastasiou regularization introduces a
+parameter $m$ and replaces the apparent viscosity as given by Eq.\
+\eqref{eq:binghamViscosity} by the smooth function 
 
 \begin{equation}
-    \eta = \frac{B}{\dot{\gamma}} \left(1-e^{-m\dot{\gamma}} \right) + 1
+    \eta_p = \frac{B}{\dot{\gamma}} \left(1-e^{-m\dot{\gamma}} \right) + 1
+    \label{eq:papa}
 \end{equation}
+%
+which is well-defined also in the limit as $\dot{\gamma}$ approaches zero.
+Figure \ref{fig:regularization} exhibits the behaviour of the function for
+several values of $m$. Physically, using Eq.\ \eqref{eq:papa} to describe the
+apparent viscosity corresponds to replacing the ``solid'' behaviour in the
+unyielded regions by a fluid with very high viscosity. When choosing the value
+of the parameter $m$, it is obviously desirable to make it large, since this
+mimics the physical apparent viscosity better. On the other hand, the exponential in Eq.\
+\eqref{eq:papa}, when combined with local numerical errors, causes non-smooth
+lines and zig-zagging behaviour for higher $m$ \cite{mitsoulis2001flow}. 
 
 \begin{figure}[htb]
     \centering
@@ -839,34 +854,137 @@ when Eq.\ \eqref{eq:binghamPDE} is satisfied.
         \node[anchor=south] at (-0.3,1.3) {$B$};
         \draw (-0.07,1.55) -- (0,1.55) {};
     \end{tikzpicture}
-    \caption{Regularization technique to mimic the behaviour of Bingham
-        ``plastic'' 
-    plastics.}
+    \caption
+    {
+        Papanastasiou regularization of the apparent viscosity. The black line
+        corresponds to the physical apparent viscosity, whereas blue is the
+        Papanastasiou viscosity $\eta_p$ for various $m$.  Larger values of $m$
+        are drawn with darker blue. 
+    }
     \label{fig:regularization}
 \end{figure}
 
 \subsubsection{Spatial discretization}
 
-\begin{itemize}
-    \item Finite volume method w/o need for staggered grid, discretization of
-        viscous term
-\end{itemize}
+Equation \eqref{eq:binghamPDE} is no longer on the form which produces a
+checkerboard pattern upon spatial discretization, so there is no longer need
+for a staggered grid. We therefore use a standard, colocated grid for $u$, $v$
+and $p$ and discretize as before with finite volumes. For each control volume,
+Eq.\ \eqref{eq:binghamPDE} in integral form can be written
 
-\subsubsection{SIMPLE and friends}
+\begin{equation}
+    \int_{\partial \Omega_{i,j}} p {\rm d}\bm{S} = \int_{\partial \Omega_{i,j}}
+    \eta \dot{\bm{\gamma}} \cdot {\rm d}\bm{S} \,.
+    \label{eq:binghamFVM}
+\end{equation}
+%
+Discretizing the first component of the pressure term in Eq.\ is trivial: 
 
-\begin{itemize}
-    \item Solution of steady-state system: SIMPLE and its extensions
-\end{itemize}
+\begin{equation}
+    \int_{\partial \Omega_{i,j}} p \bm{e}_x \cdot {\rm d}\bm{S} \approx
+    (p_{i+\frac{1}{2},j}-p_{i-\frac{1}{2},j}) \Delta x \,.
+\end{equation}
+%
+The stress is slightly more cumbersome. We note that, in two dimensions, for
+incompressible flow, the strain rate tensor is given by 
+
+\begin{equation}
+    \dot{\bm{\gamma}} = 
+    \begin{pmatrix}
+        \partial_x u - \partial_y v & \partial_y u + \partial_x v \\
+        \partial_y u + \partial_x v & \partial_x u - \partial_y v
+    \end{pmatrix} \,,
+\end{equation}
+%
+so that its magnitude is 
+
+\begin{equation}
+    \dot{\gamma} = \sqrt{(\partial_x u - \partial_y v)^2+(\partial_y u +
+    \partial_x v)^2} \,.
+    \label{eq:strain}
+\end{equation}
+%
+We approximate the derivatives of the velocities on right part of the boundary $\partial
+\Omega_{i,j}$ by 
+
+\begin{align}
+    \nonumber 
+    \partial_x u_{i+\frac{1}{2},j} &\approx \frac{u_{i+1,j}-u_{i,j}}{\Delta x}
+    \,, \\
+    \nonumber 
+    \partial_y u_{i+\frac{1}{2},j} &\approx
+    \frac{u_{i,j+1}+u_{i+1,j+1}-u_{i+1,j-1}-u_{i,j-1}}{4\Delta x} \,, \\
+    \nonumber
+    \partial_x v_{i+\frac{1}{2},j} &\approx \frac{v_{i+1,j}-v_{i,j}}{\Delta x}
+    \,, \\
+    \partial_y v_{i+\frac{1}{2},j} &\approx
+    \frac{v_{i,j+1}+v_{i+1,j+1}-v_{i+1,j-1}-v_{i,j-1}}{4\Delta x} \,,
+\end{align}
+%
+and similarly for the other edges of the boundary. For brevity, we also denote
+by $\dot{\gamma}_{i+\frac{1}{2},j}$ the evaluation of Eq.\ \eqref{eq:strain}
+using these approximations. The first component of the viscuous term in Eq.\
+\eqref{eq:binghamFVM} can then be approximated as
+
+\begin{align}
+    \nonumber 
+    \frac{1}{\Delta x} &\int_{\partial \Omega_{i,j}} \eta_p \dot{\bm{\gamma}}
+    \cdot \bm{e}_x \cdot {\rm d}\bm{S} \approx \\ 
+    \nonumber 
+    &+ \eta_p (\dot{\gamma}_{i+\frac{1}{2},j}) (\partial_x
+    u_{i+\frac{1}{2},j} - \partial_y v_{i+\frac{1}{2},j}) \\
+    \nonumber 
+    &- \eta_p (\dot{\gamma}_{i-\frac{1}{2},j}) (\partial_x
+    u_{i-\frac{1}{2},j} - \partial_y v_{i-\frac{1}{2},j}) \\
+    \nonumber 
+    &+ \eta_p (\dot{\gamma}_{i,j+\frac{1}{2}}) (\partial_y
+    u_{i,j+\frac{1}{2}} + \partial_x v_{i,j+\frac{1}{2}}) \\
+    &- \eta_p (\dot{\gamma}_{i,j-\frac{1}{2}}) (\partial_y
+    u_{i,j-\frac{1}{2}} + \partial_x v_{i,j-\frac{1}{2}}) \,.
+\end{align}
+%
+We thus have a discretized version of the $x$-component of Eq.\
+\eqref{eq:binghamFVM}, and obtain a similar one by exactly the same procedure
+for the $y$-component. The only remaining problem is then to solve the
+nonlinear system of discretized equations. 
+
+\subsubsection{Projection methods for steady-state flows}
+
+A popular algorithm for solving nonlinear systems of the form that arises from
+our spatial discretization of Eq.\ \eqref{eq:binghamFVM} is the Semi-Implicit
+Method for Pressure-Linked Equations (SIMPLE). For a full explanation of the
+method and versions of it (SIMPLEC, SIMPLER, \ldots), we recommend Section 10.4
+of Zikanov's book \cite{zikanov2010essential}. The basic idea in these methods
+is to construct a number of linear systems to be solved iteratively until
+convergence is achieved. Linearization of the discretized sets of equations is
+done by computing some terms with values from previous iterations.  Successful
+implementation of the SIMPLE algorithm to solve the steady-state Navier-Stokes
+equations has been demonstrated in the literature \cite{syrakos2013solution}.
 
 \section{Results}
 \label{sec:results}
 
+All results presented in this Section are generated using the implemented
+scheme described in Subsection \ref{subsec:newtonian}, run on a laptop with an
+Intel Core i7 CPU \@ 2.50 GHz $\times$ 4 and 16 GB RAM running Linux ubuntu
+12.04 LTS. The velocity of the lid is taken to be $a=1.0$, while the tolerance
+required for convergence to steady-state is set to $\epsilon=10^{-5}$. 
+
 \subsection{Analysis of time step size}
 \label{subsec:timeStep}
 
-Text about Figure \ref{fig:dt}. We use $\Delta t = 500 \Delta x / {\rm Re}$
-based on the results. This produces stable simulations up to $N=129$ and ${\rm
-Re}=1000$. For Re$>1000$, we use $\Delta t = 100 \Delta x / {\rm Re}$.
+Figure \ref{fig:dt} shows the results from our numerical experiment to
+determine maximum time step size. As expected, a reduction in temporal step
+size is required for increases in both Reynolds number and the amount of grid
+points. Based on this trend, we decided to use a formula of the form $\Delta t
+\propto \Delta x / {\rm Re}$ when choosing the time step. The dashed lines in
+Figure \ref{fig:dt} show corresponding lines with a proportionality factor of
+500. With this choice of time step, our simulations remain stable for as large
+grid sizes as we have considered ($N$ up to 129) and ${\rm Re} \leq 1000$.
+Although we concentrate on the cases where ${\rm Re} \leq 1000$, it is
+naturally desirable for the code to work for as high Re as possible. For larger
+Reynolds numbers, we therefore employ $\Delta t = 100 \Delta x / {\rm Re}$,
+which works (at least) up to $N=129$, ${\rm Re}=3200$. 
 
 \begin{figure}[htb]
     \centering
@@ -895,21 +1013,100 @@ Re}=1000$. For Re$>1000$, we use $\Delta t = 100 \Delta x / {\rm Re}$.
             \addplot[draw=teal,dashed,domain=150:1050,samples=100]{500/(65*x)};
         \end{axis}
     \end{tikzpicture}
-    \caption{Time step analysi yo!}
+    \caption
+    {
+        Maximum time step for convergence to steady-state as a function of the
+        Reynolds number. The dashed lines of the same colour as the points
+        correspond to our choice of $\Delta t = 500 \Delta x / {\rm Re}$. 
+    }
     \label{fig:dt}
 \end{figure}
+
 
 \subsection{Transient behaviour}
 \label{subsec:transient}
 
-\begin{itemize}
-    \item Impulsively started
-    \item What happens as a function of time? 
-    \item Results for different Re? 
-\end{itemize}
+In order to investigate how the impusively started system evolves to
+steady-state, we initiated a test case with ${\rm Re=200}$ and $N=129$,
+outputing the system state at even intervals. Figure \ref{fig:transient} shows
+the state of the system at four different times through plots of the stream
+function and velocity vectors. 
+
+\begin{figure*}[t]
+    \centering
+    \foreach \t in {1,2,3,4}
+    {
+        \pgfplotstableread{../Results/psi_N129_Re200_\t.out}{\psi}
+        \tikzsetnextfilename{Transient_\t}
+        \begin{tikzpicture}
+            \begin{axis}
+            [
+                xlabel={$x$}, ylabel={$y$},
+                ylabel style={rotate=-90},
+                xmin=0, xmax=1, ymin=0, ymax=1,
+                point meta min=-0.12, point meta max=0.02,
+                view={0}{90}
+            ]
+                \addplot3[surf,shader=interp] table[]{\psi}; 
+                \addplot3
+                [
+                    mesh/rows=128, mesh/cols=128, 
+                    contour gnuplot=
+                    {
+                        labels=false, 
+                        draw color=black, 
+                        levels=
+                        {
+                            -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07,
+                            -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5,
+                            5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3 
+                        }
+                    }
+                ]
+                table{\psi}; 
+                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+                table[each nth point=510]{../Results/vec_N129_Re200_\t.out};
+                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+                table[each nth point=514]{../Results/vec_N129_Re200_\t.out};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption
+    {
+        Transient results for ${\rm Re}=200$ at different times: $t=0.04$
+        (upper left), $t=0.60$ (upper right), $t=1.61$ (lower left) and $t=10$
+        (lower right). The surface plots exhibit the stream function $\psi$, its
+        contours are stream lines, and the vectors correspond to the velocity
+        field $\bm{u}$ at selected points of the domain. 
+    }
+    \label{fig:transient}
+\end{figure*}
+
+The system behaves as one would expect. Initially, the fluid is at rest in all
+parts of the domain. In the upper right plot of Figure \ref{fig:transient}, the
+system has only just started to be affected by the movement of the lid: there
+is a flow along the lid and a slight circulation from the upper right corner,
+through the center, and back to the upper left corner. In the next snapshot
+(upper right), this circulation has become more pronounced, as is evident from
+the relative size of the velocity vectors. In the lower left plot, the
+formation of a vortex is evident. Finally, at steady-state (lower right), the
+system has evolved to the final state where a constant circulation is present
+in the cavity, and we can even discern the creation of a secondary eddy in the
+lower right corner. Note that all the velocity vectors are parallel to the stream
+lines, as expected. 
 
 \subsection{Steady-state solution}
 \label{subsec:steady}
+
+Although it is well and good to see results which we deem reasonable
+intuitively, known reference solutions are necessary to validate the code. As
+such, we compare our findings with those of Ghia {\em et al.\ }
+\cite{ghia1982high}, since their paper is widely recognized as the reference
+for high-Re incompressible flow in the lid-driven cavity test case. Results
+have been computed with Reynolds numbers of 100, 200, 1000 and 3200 and grid
+sizes increasing from $N=17$ to $N=129$. In Figures \ref{fig:uGC} -
+\ref{fig:vorticity}, results are presented which visualize the steady-state
+distribution of velocities, stream function and vorticity. 
 
 \begin{figure*}[t]
     \centering
@@ -917,8 +1114,6 @@ Re}=1000$. For Re$>1000$, we use $\Delta t = 100 \Delta x / {\rm Re}$.
     \begin{tikzpicture}
         \begin{groupplot}
             [
-                height=0.8\columnwidth,
-                width=\columnwidth,
                 group style=
                 {
                     group size=2 by 2, 
@@ -963,64 +1158,105 @@ Re}=1000$. For Re$>1000$, we use $\Delta t = 100 \Delta x / {\rm Re}$.
             table[x={y}, y={Re3200}]{../Results/uGC.ref};
         \end{groupplot}
     \end{tikzpicture}
-    \caption{First component of velocity through $x=0.5$.}
+    \caption
+    {
+        First component $u$ of velocity through $x=0.5$. The filled black
+        diamonds corresponds to tabulated results from Ghia {\em et al.\ }
+        \cite{ghia1982high}. \textcolor{red}{$\times$} $N=17$,
+        \textcolor{blue}{$\circ$} $N=33$, \textcolor{teal}{$\triangle$} $N=65$,
+        \textcolor{purple}{\huge $_{\cdot}$} $N=129$.  
+    }
     \label{fig:uGC}
 \end{figure*}
-%
-%\begin{figure*}[t]
-%    \centering
-%    \tikzsetnextfilename{vSlice}
-%    \begin{tikzpicture}
-%        \begin{groupplot}
-%            [
-%                height=0.8\columnwidth,
-%                width=\columnwidth,
-%                group style=
-%                {
-%                    group size=2 by 2, 
-%                    xlabels at=edge bottom, 
-%                    xticklabels at=edge bottom, 
-%                    ylabels at=edge left, 
-%                    vertical sep=25pt, 
-%                    horizontal sep=25pt
-%                },
-%                xlabel=$x$, xmin=0, xmax=1, 
-%                ylabel=$v$, 
-%                ylabel style={rotate=-90}
-%            ]
-%            \nextgroupplot[title={Re=100}]
-%            \foreach \N in {17,33,65,129}
-%            {
-%                \addplot+[only marks] table{../Results/vGC_N\N_Re100.out}; 
-%            }
-%            \addplot+[only marks] table[x={x}, y={Re100}]{../Results/vGC.ref};
-%
-%            \nextgroupplot[title={Re=400}]
-%            \foreach \N in {17,33,65,129}
-%            {
-%                \addplot+[only marks] table{../Results/vGC_N\N_Re400.out}; 
-%            }
-%            \addplot+[only marks] table[x={x}, y={Re400}]{../Results/vGC.ref};
-%
-%            \nextgroupplot[title={Re=1000}]
-%            \foreach \N in {17,33,65,129}
-%            {
-%                \addplot+[only marks] table{../Results/vGC_N\N_Re1000.out}; 
-%            }
-%            \addplot+[only marks] table[x={x}, y={Re1000}]{../Results/vGC.ref};
-%
-%            \nextgroupplot[title={Re=3200}]
-%            \foreach \N in {17,33,65,129}
-%            {
-%                \addplot+[only marks] table{../Results/vGC_N\N_Re3200.out}; 
-%            }
-%            \addplot+[only marks] table[x={x}, y={Re3200}]{../Results/vGC.ref};
-%        \end{groupplot}
-%    \end{tikzpicture}
-%    \caption{Second component of velocity through $y=0.5$.}
-%    \label{fig:vGC}
-%\end{figure*}
-%
+
+Figure \ref{fig:uGC} shows how the first component of the velocity, $u$, varies
+in the plane $x=0.5$, a slice through the geometric centre of the computational
+domain. Note especially the filled, black diamonds, which correspond to values
+tabulated by Ghia {\em et al.\ } in their paper \cite{ghia1982high}. For ${\rm
+Re} = 100$, our results are very close to the reference even for the smallest
+grid sizes. Our solver struggles more as Re increases, but it is still evident
+that grid refinement gives convergence. For the highest grid resolution, our
+results align perfecly with the reference for ${\rm Re} \leq 1000$, and they
+even approach the reference solution for ${\rm Re} = 3200$. Similar results for
+the second velocity component, $v$, are given in Figure \ref{fig:vGC}. Here,
+the slice is through $y=0.5$. We observe that the results tend towards the
+reference solutions in the same manner as for $u$. 
+
+\begin{figure*}[t]
+    \centering
+    \tikzsetnextfilename{vSlice}
+    \begin{tikzpicture}
+        \begin{groupplot}
+            [
+                group style=
+                {
+                    group size=2 by 2, 
+                    xlabels at=edge bottom, 
+                    xticklabels at=edge bottom, 
+                    ylabels at=edge left, 
+                    vertical sep=25pt, 
+                    horizontal sep=25pt
+                },
+                xlabel=$x$, xmin=0, xmax=1, 
+                ylabel=$v$, 
+                ylabel style={rotate=-90}
+            ]
+            \nextgroupplot[title={Re=100}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re100.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re100}]{../Results/vGC.ref};
+
+            \nextgroupplot[title={Re=400}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re400.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re400}]{../Results/vGC.ref};
+
+            \nextgroupplot[title={Re=1000}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re1000.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re1000}]{../Results/vGC.ref};
+
+            \nextgroupplot[title={Re=3200}]
+            \foreach \N in {17,33,65,129}
+            {
+                \addplot+[only marks] table{../Results/vGC_N\N_Re3200.out}; 
+            }
+            \addplot+[only marks] table[x={x}, y={Re3200}]{../Results/vGC.ref};
+        \end{groupplot}
+    \end{tikzpicture}
+    \caption
+    {
+        Second component $v$ of velocity through $y=0.5$. The filled black
+        diamonds corresponds to tabulated results from Ghia {\em et al.\ }
+        \cite{ghia1982high}. \textcolor{red}{$\times$} $N=17$,
+        \textcolor{blue}{$\circ$} $N=33$, \textcolor{teal}{$\triangle$} $N=65$,
+        \textcolor{purple}{\huge $_{\cdot}$} $N=129$. 
+    }
+    \label{fig:vGC}
+\end{figure*}
+
+Figure \ref{fig:stream} shows the distribution of the stream function and
+velocity field at steady-state. When compared to Figure 3 in the paper by Ghia
+{\em et al.}, we see that the streamline pattern is near identical for all
+cases. The stream lines which we have plotted as contours of $\psi$ are the
+same as those used in the reference. Our inclusion of the velocity field at
+selected places in the domain is merely to give an intuitive understanding of
+the distribution of flow. Figure \ref{fig:vorticity} depicts the vorticity
+distribution in the domain, including contours. Also here, our results are
+indistinguishable from the results as shown in Figure 4 in the reference
+\cite{ghia1982high}. 
+
+\begin{itemize}
+        \item Fix plots for $\psi$ and $\omega$: rotate ylabel, check range for
+            meta values, compare with transient
+\end{itemize}
+
 %\begin{figure*}[t]
 %    \centering
 %    \foreach \Re in {100,400,1000,3200}
@@ -1101,18 +1337,19 @@ Re}=1000$. For Re$>1000$, we use $\Delta t = 100 \Delta x / {\rm Re}$.
 \label{subsec:efficiency}
 
 \begin{itemize}
-    \item Computational complexity of the linear systems
+    \item Computational complexity of the linear systems 
     \item Runtime (and no of time steps) as a function of Re and $N$
 \end{itemize}
 
-\section{Discussion}
+\section{Possible improvements}
 \label{sec:discussion}
 
 \begin{itemize}
-    \item Everything works, results exactly as in literature
-    \item Transient method is slow for high Re, SIMPLE could be better
+    \item Could obviously implement Bingham plastic.
+    \item This could also be done for Re>0. 
+    \item Transient method is slow for high Re, SIMPLE could be better 
     \item Other improvements include Hockney algorithm and multigrid methods
-    \item Discuss stability and computational efficiency of
+        for the linear systems
 \end{itemize}
 
 \section{Conclusions}

@@ -1,4 +1,4 @@
-This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  7 MAR 2016 16:16
+This is LuaTeX, Version beta-0.80.0 (TeX Live 2015) (rev 5238)  (format=lualatex 2015.11.18)  8 MAR 2016 14:51
  \write18 enabled.
 **\def\tikzexternalrealjob{MiniProj2_ProjectionMethod}\input{MiniProj2_Projecti
 onMethod}
@@ -737,7 +737,7 @@ sable this.
 A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
 sable this.
 
-Overfull \hbox (10.19379pt too wide) detected at line 463
+Overfull \hbox (10.19379pt too wide) detected at line 465
  []$[] \OT1/cmr/m/n/10 = [][] \OML/cmm/m/it/10 u[]\OT1/cmr/m/n/10 d\OML/cmm/m/i
 t/10 V \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 t [][]\OT1/cmr/m/n/10 (\OML/cmm/m/it
 /10 u[]@[]u[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 v[]@[]u[]\OT1/cmr/m/n/10 )d\OM
@@ -745,21 +745,30 @@ L/cmm/m/it/10 V :$ []
  []
 
 Missing character: There is no   (U+00A0) in font cmr10!
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 517.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 519.
 (/opt/texlive/2015/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 517.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 519.
 Missing character: There is no   (U+00A0) in font cmr10!
 Missing character: There is no   (U+00A0) in font cmr10!
 
-Underfull \hbox (badness 1565) in paragraph at lines 697--703
+Underfull \hbox (badness 1565) in paragraph at lines 699--705
 [][]\OT1/cmr/m/n/10 If the sys-tem con-verges to steady-state be-
  []
 
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 752.
+Missing character: There is no   (U+00A0) in font cmr10!
+Missing character: There is no   (U+00A0) in font cmr10!
+Missing character: There is no   (U+00A0) in font cmr10!
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
+
+Underfull \hbox (badness 1163) in paragraph at lines 945--951
+[]\OT1/cmr/m/n/10 We thus have a dis-cretized ver-sion of the $\OML/cmm/m/it/10
+ x$\OT1/cmr/m/n/10 -
+ []
+
 
 \openout5 = Figures/dt.dpth
 PGFPlots: reading {../Results/dt.out}
@@ -768,23 +777,27 @@ PGFPlots: reading {../Results/dt.out}
 \openout6 = Figures/dt.dep
 PGFPlots: reading {../Results/dt.out}
 PGFPlots: reading {../Results/dt.out}
-[6
+[8
 
 Missing character: There is no ; (U+003B) in font nullfont!
 Missing character: There is no ; (U+003B) in font nullfont!
 Missing character: There is no ; (U+003B) in font nullfont!
 {/opt/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1024.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to di
+sable this.
 No file Figures/dt.bbl.
 )
 
 Here is how much of LuaTeX's memory you used:
- 24818 strings out of 494938
+ 24821 strings out of 494938
  100000,794899 words of node,token memory allocated
- 581 words of node memory still in use:
-   7 hlist, 2 vlist, 2 rule, 2 glue, 22 kern, 8 sub_mlist, 1 glyph, 49 glue_spec
+ 648 words of node memory still in use:
+   7 hlist, 2 vlist, 2 rule, 2 glue, 30 kern, 8 sub_mlist, 1 glyph, 49 glue_spec
 , 1 write nodes
-   avail lists: 2:53,3:891,4:1439,5:467,6:4043,7:263,9:972,10:375
- 27468 multiletter control sequences out of 65536+600000
+   avail lists: 2:53,3:831,4:1408,5:458,6:4105,7:263,9:972,10:390
+ 27471 multiletter control sequences out of 65536+600000
  69 fonts using 2721771 bytes
  56i,21n,100p,792b,2212s stack positions out of 5000i,500n,10000p,200000b,100000s
 <</opt/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><</opt/

@@ -12,18 +12,20 @@ int main(int argc, char* argv[])
         cout << "Re: ";
         cin >> Re; 
     }
-    else{
-        N = atoi(argv[1]);     // Number of cells per direction
-        Re = atof(argv[2]); // Reynolds number
+    else
+    {
+        N = atoi(argv[1]);      // Number of cells per direction
+        Re = atof(argv[2]);     // Reynolds number
     }
     if(N==20) N=21;             //TODO: FInd out why N=20 doesnt
 
-    int i, j;
-    double a = 1.0;            // Velocity of lid
-    double dx = 1.0/N;         // Grid spacing
-    double t = 0.0;            // Time counter
-    double dt = 100*dx/Re;// Time step TODO: check stability
-    double tol = 1e-6;
+    int i, j;                   // Counters for loops
+    double a = 1.0;             // Velocity of lid
+    double dx = 1.0/N;          // Grid spacing
+    double t = 0.0;             // Time counter
+    double dt = 500*dx/Re;      // Time step
+    if(Re>1000) dt /= 5.0;      // Ensure time step is small enough for high-Re
+    double tol = 1e-5;          // Tolerance for convergence
 
     ofstream fs;           // File stream for writing res
     char filename[50];
@@ -94,7 +96,7 @@ int main(int argc, char* argv[])
         eps = u-prev;
         prev = u;
 
-        if(iter%10==0)
+//        if(iter%10==0)
             cout << iter << "\t" << iter*dt << "\t" 
                 << eps.squaredNorm() << "\t" << eps.lpNorm<Infinity>()/u.lpNorm<Infinity>() << "\n";
     }
@@ -106,7 +108,7 @@ int main(int argc, char* argv[])
     VectorXd psi = solver_psi.solve(omega);
 
     // Print results to file
-/*
+
     sprintf(filename, "../Results/psi_N%d_Re%d.out", N, int(Re));
     fs.open(filename, std::fstream::out);
     for(i=0; i<N-1; i++)
@@ -174,5 +176,5 @@ int main(int argc, char* argv[])
                 << u[i*N+j] << "\t" << v[j*N+i] << "\n";
         }
     }
-    fs.close(); */
+    fs.close(); 
 }
