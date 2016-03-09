@@ -1252,86 +1252,84 @@ distribution in the domain, including contours. Also here, our results are
 indistinguishable from the results as shown in Figure 4 in the reference
 \cite{ghia1982high}. 
 
-\begin{itemize}
-        \item Fix plots for $\psi$ and $\omega$: rotate ylabel, check range for
-            meta values, compare with transient
-\end{itemize}
+\begin{figure*}[t]
+    \centering
+    \foreach \Re in {100,400,1000,3200}
+    {
+        \pgfplotstableread{../Results/psi_N129_Re\Re.out}{\psi}
+        \tikzsetnextfilename{Stream_Re\Re}
+        \begin{tikzpicture}
+            \begin{axis}
+            [
+                title={${\rm Re}=\Re$},
+                xlabel={$x$}, ylabel={$y$},
+                ylabel style={rotate=-90},
+                xmin=0, xmax=1, ymin=0, ymax=1,
+                point meta min=-0.12, point meta max=0.02,
+                view={0}{90}
+            ]
+                \addplot3[surf,shader=interp] table[]{\psi}; 
+                \addplot3
+                [
+                    mesh/rows=128, mesh/cols=128, 
+                    contour gnuplot=
+                    {
+                        labels=false, 
+                        draw color=black, 
+                        levels=
+                        {
+                            -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07,
+                            -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5,
+                            5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3 
+                        }
+                    }
+                ]
+                table{\psi}; 
+                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+                table[each nth point=510]{../Results/vec_N129_Re\Re.out};
+                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
+                table[each nth point=514]{../Results/vec_N129_Re\Re.out};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Stream function for different Reynold's numbers}
+    \label{fig:stream}
+\end{figure*}
 
-%\begin{figure*}[t]
-%    \centering
-%    \foreach \Re in {100,400,1000,3200}
-%    {
-%        \pgfplotstableread{../Results/psi_N129_Re\Re.out}{\psi}
-%        \tikzsetnextfilename{Stream_Re\Re}
-%        \begin{tikzpicture}
-%            \begin{axis}
-%            [
-%                title={${\rm Re}=\Re$},
-%                xlabel={$x$}, ylabel={$y$},
-%                xmin=0, xmax=1, ymin=0, ymax=1,
-%                view={0}{90}
-%            ]
-%                \addplot3[surf,shader=interp] table[]{\psi}; 
-%                \addplot3
-%                [
-%                    mesh/rows=128, mesh/cols=128, 
-%                    contour gnuplot=
-%                    {
-%                        labels=false, 
-%                        draw color=black, 
-%                        levels=
-%                        {
-%                            -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07,
-%                            -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5,
-%                            5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3 
-%                        }
-%                    }
-%                ]
-%                table{\psi}; 
-%                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
-%                table[each nth point=510]{../Results/vec_N129_Re\Re.out};
-%                \addplot[white, quiver={u=\thisrow{u},v=\thisrow{v}, scale arrows=0.5}, -stealth]
-%                table[each nth point=514]{../Results/vec_N129_Re\Re.out};
-%            \end{axis}
-%        \end{tikzpicture}
-%    }
-%    \caption{Stream function for different Reynold's numbers}
-%    \label{fig:stream}
-%\end{figure*}
-%
-%\begin{figure*}[t]
-%    \centering
-%    \foreach \Re in {100,400,1000,3200}
-%    {
-%        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
-%        \tikzsetnextfilename{Vorticity_Re\Re}
-%        \begin{tikzpicture}
-%            \begin{axis}
-%            [
-%                title={${\rm Re}=\Re$},
-%                xlabel={$x$}, ylabel={$y$},
-%                xmin=0, xmax=1, ymin=0, ymax=1,
-%                point meta min=-6, point meta max=6,
-%                view={0}{90}
-%            ]
-%                \addplot3[surf,shader=interp] table[]{\omega}; 
-%                \addplot3
-%                [
-%                    mesh/rows=128, mesh/cols=128, 
-%                    contour gnuplot=
-%                    {
-%                        labels=false, 
-%                        draw color=black, 
-%                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
-%                    }
-%                ]
-%                table[]{\omega}; 
-%            \end{axis}
-%        \end{tikzpicture}
-%    }
-%    \caption{Vorticity for different Reynold's numbers}
-%    \label{fig:vorticity}
-%\end{figure*}
+\begin{figure*}[t]
+    \centering
+    \foreach \Re in {100,400,1000,3200}
+    {
+        \pgfplotstableread{../Results/omega_N129_Re\Re.out}{\omega}
+        \tikzsetnextfilename{Vorticity_Re\Re}
+        \begin{tikzpicture}
+            \begin{axis}
+            [
+                title={${\rm Re}=\Re$},
+                xlabel={$x$}, ylabel={$y$},
+                ylabel style={rotate=-90},
+                xmin=0, xmax=1, ymin=0, ymax=1,
+                point meta min=-6, point meta max=6,
+                view={0}{90}
+            ]
+                \addplot3[surf,shader=interp] table[]{\omega}; 
+                \addplot3
+                [
+                    mesh/rows=128, mesh/cols=128, 
+                    contour gnuplot=
+                    {
+                        labels=false, 
+                        draw color=black, 
+                        levels={-3,-2,-1,-0.5,0,0.5,1,2,3,4,5}
+                    }
+                ]
+                table[]{\omega}; 
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Vorticity for different Reynold's numbers}
+    \label{fig:vorticity}
+\end{figure*}
 
 \subsection{Computational efficiency}
 \label{subsec:efficiency}
@@ -1341,13 +1339,25 @@ indistinguishable from the results as shown in Figure 4 in the reference
     \item Runtime (and no of time steps) as a function of Re and $N$
 \end{itemize}
 
-\section{Possible improvements}
-\label{sec:discussion}
+\section{Suggestions for further work}
+\label{sec:further}
+
+The most obvious next step is to implement the SIMPLE algorithm for solving the
+steady-state Navier-Stokes equations for Bingham plastics. Although the main
+considerations necessary to take have been outlined in Subsection
+\ref{subsec:bingham}, implementation of SIMPLE and its extensions is
+not necessarily trivial. It would also be very interesting to try and develop a
+transient solver of the same type as we have implemented for the Newtonian
+case, following the idea of semi-implicitly temporal discretization of the
+viscuous term. 
+
+For high Reynolds numbers, use of the time-marching PDE solver becomes a very
+inefficient method to obtain steady-state solutions. Higher grid sizes and
+smaller time steps are necessary for convergence, so obtaining results 
+becomes impractical rapidly as Re is increased. For the steady-state case, one
+could use an algorithm such as SIMPLE or a vorticity-stream-function method.
 
 \begin{itemize}
-    \item Could obviously implement Bingham plastic.
-    \item This could also be done for Re>0. 
-    \item Transient method is slow for high Re, SIMPLE could be better 
     \item Other improvements include Hockney algorithm and multigrid methods
         for the linear systems
 \end{itemize}
