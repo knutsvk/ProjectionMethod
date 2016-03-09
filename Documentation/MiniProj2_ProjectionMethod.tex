@@ -1331,7 +1331,7 @@ indistinguishable from the results as shown in Figure 4 in the reference
     \label{fig:vorticity}
 \end{figure*}
 
-\subsection{Computational efficiency}
+\subsection{Computational efficiency?}
 \label{subsec:efficiency}
 
 \begin{itemize}
@@ -1345,26 +1345,52 @@ indistinguishable from the results as shown in Figure 4 in the reference
 The most obvious next step is to implement the SIMPLE algorithm for solving the
 steady-state Navier-Stokes equations for Bingham plastics. Although the main
 considerations necessary to take have been outlined in Subsection
-\ref{subsec:bingham}, implementation of SIMPLE and its extensions is
-not necessarily trivial. It would also be very interesting to try and develop a
-transient solver of the same type as we have implemented for the Newtonian
-case, following the idea of semi-implicitly temporal discretization of the
-viscuous term. 
+\ref{subsec:bingham}, implementation of SIMPLE and its extensions is not
+necessarily trivial, especially if trying to do so in a computationally
+optimal manner taking advantage of preconditioners and utilizing multigrid
+methods. It would also be very interesting to try and develop a transient
+solver of the same type as we have implemented for the Newtonian case,
+following the idea of semi-implicitly temporal discretization of the viscuous
+term. 
 
 For high Reynolds numbers, use of the time-marching PDE solver becomes a very
 inefficient method to obtain steady-state solutions. Higher grid sizes and
-smaller time steps are necessary for convergence, so obtaining results 
-becomes impractical rapidly as Re is increased. For the steady-state case, one
-could use an algorithm such as SIMPLE or a vorticity-stream-function method.
+smaller time steps are necessary for convergence, so obtaining results becomes
+impractical rapidly as Re is increased. For the steady-state case, one could
+use an algorithm such as SIMPLE or a vorticity-stream-function method.  There
+are, however, actions that could be taken to speed up the solver already
+implemented. Since each time step in the time-marching scheme is dependent on
+the previous one, optimization should be done within each time step. The
+matrices for the linear systems are only built once at the beginning of the
+simulation, and although the assembling of these could be looked into, the gain
+would probably be negligible compared to that achieved by speeding up the
+functions used within each time step. 
 
-\begin{itemize}
-    \item Other improvements include Hockney algorithm and multigrid methods
-        for the linear systems
-\end{itemize}
+We have not utilized proper vectorization when updating the load vectors for
+the linear systems, but instead calculated each component individually. This
+could perhaps reduce the time spent in each time step marginally, but the main
+computational effort is in solving the liner systems of equations. We could
+probably not improve on the actual solvers provided by the Eigen library, but
+inspection of the (block) tridiagonal matrices make it apparent that they could
+be suitable for variants of the Hockney algorithm \cite{hockney1965fast}, which
+decouples the system of equations and utilizes the discrete Fourier transform
+to compute the solution of each such decoupled system rapidly. 
 
 \section{Conclusions}
 \label{sec:conclusion}
 
+We have successfully implemented a numerical solver for Newtonian fluids
+obeying the unsteady, incompressible Navier-Stokes equations in two spatial
+dimensions. Our results for the benchmark problem of a lid-driven cavity are in
+agreement with those previously presented in the literature for Reynolds
+numbers at least up to 3200, although computations converges slower and become
+more computationally expensive quickly as Re increases.  In addition to this
+implementation, we have discussed possible extensions to the special class of
+Non-Newtonian fluilds known as Bingham plastics is given in the case of
+Reynolds number zero (creeping flow). There is nothing novel about the methods
+employed and the resulting code, but this project report nevertheless serves as
+a literature review which covers an introduction to the problem at hand, and
+which validates our code through well-documented tests. 
 
 \section*{References}
 \bibliographystyle{elsarticle-num}
