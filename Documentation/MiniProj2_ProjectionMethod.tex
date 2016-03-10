@@ -45,7 +45,7 @@
     incompressible Navier-Stokes equations in the two-dimensional test case of
     a lid-driven cavity. For Newtonian fluids, we demonstrate the
     implementation of a fractional-step projection method for solving the
-    transient problem with high Reynolds numbers, and show that the system
+    transient problem with moderately high Reynolds numbers, and show that the system
     converges to the steady-state solution previously documented in the
     literature. Additionaly, we discuss the case of Reynolds number zero in
     Bingham plastic fluids, and how the steady-state solution can be computed
@@ -60,8 +60,8 @@
 
 In physics, few equations span as wide a range of applications as the
 Navier-Stokes equations of fluid dynamics. They govern the motion of viscous
-fluids in a continuum framework, and as such have applications in {\em e.g.\ }
-climate modelling \cite{marshall1997finite, giraldo2008study}, aerodynamics
+fluids in a continuum framework, and as such have applications in e.g.\ climate
+modelling \cite{marshall1997finite, giraldo2008study}, aerodynamics
 \cite{rai1987navier, thomas1990navier, jameson1998optimum}, medicinal research
 \cite{peskin1977numerical, mihaescu2008large} and petroleum engineering
 \cite{deiber1979flow, vinay2006numerical, cardenas2007navier, boyer2010cahn},
@@ -187,7 +187,7 @@ When discussing creeping flow for Bingham plastic fluids, however, we return to
 Several models exist to describe different types of Non-Newtonian fluids, each
 characterized by the way the stress $\tau = \sqrt{\frac{1}{2} \sum
 \bm{\tau}_{i,j}^2}$ depends on the strain rate $\dot{\gamma} =
-\sqrt{\frac{1}{2} \sum \dot{\bm{\gamma}}_{i,j}^2}$. The interesting variable is
+\sqrt{\frac{1}{2} \sum \dot{\bm{\gamma}}_{i,j}^2}$. The interesting quantity is
 the apparent viscosity $\eta = \tau/ \dot{\gamma}$. For Newtonian fluids, as we
 have already seen, the relationship is linear, with slope $\eta = \mu$.
 Non-Newtonian fluids include dilatants (shear-thickening, $\partial
@@ -263,10 +263,10 @@ and as such has a singularity for $\dot{\gamma}=0$.
 As a test framework for our numerical schemes, we apply them to the so-called
 lid-driven cavity problem. The problem has served as a benchmark test for
 viscous, incompressible fluid flow for decades, and reference solutions are
-readily available, notably those produced by Ghia {\em et al.\ } in 1982
-through the vorticity-strem function formulation and multigrid methods
+readily available, notably those produced by Ghia et al.\ in 1982
+through the vorticity-stream function formulation and multigrid methods
 \cite{ghia1982high}. This test case is fairly simple, and consists of a square
-domain in 2D with sides of length $L$. At all sides, both solid-wall and
+domain in two dimensions with sides of length $L$. At all sides, both solid-wall and
 no-slip boundary conditions are applied, so that the component of $\bm{u} =
 (u,v)^T$ normal to the wall is zero on the whole boundary, while the tangential
 component equals the velocity of wall. In the lid-driven cavity test, all walls
@@ -309,15 +309,19 @@ schematically.
 In Section \ref{sec:numerical}, the numerical methods employed to solve the
 incompressible Navier-Stokes equations for Newtonian fluids in the lid-driven
 cavity are explained, in addition to the extensions needed for creeping flow of
-Bingham plastics. Section \ref{sec:results} contains our results, which are the
-basis of the discussion following in Section \ref{sec:discussion}. Section
-\ref{sec:conclusion} concludes the report. 
+Bingham plastics. Section \ref{sec:results} contains our results with
+accompanying comments. Suggestions for possible extensions are given in Section
+\ref{sec:further}, while Section \ref{sec:conclusion} concludes the report. 
 
 \section{Numerical methods}
 \label{sec:numerical}
 
 \subsection{Newtonian fluid}
 \label{subsec:newtonian}
+
+\begin{itemize}
+    \item {\bf write something general}
+\end{itemize}
 
 \subsubsection{Projection method}
 
@@ -351,7 +355,7 @@ are stretched near boundaries, since otherwise the numerical viscous stability
 restriction becomes severe in these cases. 
 
 Given a suitable spatial discretization scheme, Eq.\ \eqref{eq:firstStep} is
-straightforward to solve since there is one known ($\bm{u}^n$) and one unknown
+straightforward to solve since there are two known ($\bm{u}^n$) and two unknown
 ($\tilde{\bm{u}}^{n+1}$) quantity. The second step, however, has two unknowns.
 This problem is solved by taking the divergence of Eq. \eqref{eq:secondStep}
 and enforcing $\nabla \cdot \bm{u}^{n+1} = 0$, leading to a Poisson equation
@@ -364,9 +368,7 @@ for the pressure:
 %
 By doing so, the intermediate, unphysical velocity, which was computed without
 enforcing incompressibility, is projected onto the space of vector fields
-satistfying Eq.\ \eqref{eq:incompressibility}. Note that the boundary
-conditions are also affected by taking the divergence, as by doing so the
-Dirichlet conditions are transformed to Neumann type. 
+satistfying Eq.\ \eqref{eq:incompressibility}. 
 
 The velocity at time $t^{n+1}$ can finally be updated by rearranging Eq.\
 \eqref{eq:secondStep} to read 
@@ -379,7 +381,7 @@ The velocity at time $t^{n+1}$ can finally be updated by rearranging Eq.\
 \subsubsection{Finite volumes}
 
 Spatial discretization is done through finite volumes with a staggered grid,
-{\em i.e.\ } a grid where the three primitive variables are evaluated at
+i.e.\ a grid where the three primitive variables are evaluated at
 different points.  The need for a staggered grid is due to the relationship
 between pressure and velocity. On a regular grid, a checkerboard pattern occurs
 in their dependencies upon each other, leading to decoupling and thus spurious
@@ -443,7 +445,7 @@ grid with shifted control volumes is illustrated in Figure
         points, the primitive variables are evaluated: \textcolor{blue}{$\circ$}
         $p$, \textcolor{green!50!black}{$\times$} $u$, \textcolor{red}{$*$}
         $v$. Examples of control volumes for pressure ($i=2$, $j=2$),
-        $x$-velocity ($i=3.5$, $j=2$) and $y$-velocity ($i=2$,$j=2.5$) are also
+        $x$-velocity ($i=3.5$, $j=2$) and $y$-velocity ($i=2$, $j=2.5$) are also
         shown with corresponding colors. In this example, $N=5$. 
     }
     \label{fig:staggeredGrid}
@@ -464,7 +466,7 @@ of Eq.\ \eqref{eq:firstStep} reads
 \end{multline}
 %
 We approximate the first term on each side of the equation by the
-two-dimensional midpoint rule, {\em i.e.\ } 
+two-dimensional midpoint rule, i.e.\ 
 
 \begin{equation}
     \int_{\Omega_{i+\frac{1}{2},j}} \tilde{u}^{n+1} {\rm d}V \approx
@@ -482,8 +484,8 @@ the integral in the term with the Laplacian becomes
     \int_{\partial \Omega_{i+\frac{1}{2},j}} \partial_n \tilde{u}^{n+1} 
     {\rm d}S \\
     \approx \tilde{u}_{i+\frac{3}{2},j}^{n+1} +
-    \tilde{u}_{i+\frac{3}{2},j}^{n+1} + \tilde{u}_{i+\frac{3}{2},j}^{n+1} +
-    \tilde{u}_{i+\frac{3}{2},j}^{n+1} - 4\tilde{u}_{i+\frac{3}{2},j}^{n+1} \,, 
+    \tilde{u}_{i+\frac{1}{2},j-1}^{n+1} + \tilde{u}_{i-\frac{1}{2},j}^{n+1} +
+    \tilde{u}_{i+\frac{1}{2},j+1}^{n+1} - 4\tilde{u}_{i+\frac{1}{2},j}^{n+1} \,, 
 \end{multline}
 %
 while the integrals in the nonlinear term are approximated as 
@@ -497,7 +499,7 @@ while the integrals in the nonlinear term are approximated as
     \frac{1}{2}(u_{i+\frac{1}{2},j+1}^n-u_{i+\frac{1}{2},j-1}^n) \Delta x \\ 
     \label{eq:lastApprox}
     \times \frac{1}{4} (v_{i+1,j+\frac{1}{2}}^n + v_{i+1,j-\frac{1}{2}}^n +
-    v_{i+1,j+\frac{1}{2}}^n + v_{i+1,j-\frac{1}{2}}^n) \,.
+    v_{i,j-\frac{1}{2}}^n + v_{i,j+\frac{1}{2}}^n) \,.
 \end{align}
 %
 By substituting the approximations in Eqns.\ \eqref{eq:firstApprox} -
@@ -514,7 +516,7 @@ containing the discrete values of $\tilde{u}^{n+1}$ at each point and ${\bf
 f}_u$ is a load vector depending only on values of ${\bf u}$ and ${\bf v}$ at
 the previous time step. \footnote{Note that bold symbols in italics refer to
 physical variables such as $\bm{u}=(u,v)^T$, while roman bold symbols are
-vectors of discrete values, {\em e.g.\ } ${\bf u} = \{u_{i+\frac{1}{2},j}\}$
+vectors of discrete values, e.g.\ ${\bf u} = \{u_{i+\frac{1}{2},j}\}$
 for $i \in \{ 1,2,\dots,N-1$ \}, $j \in \{ 1,2,\dots,N \}$.} The vector ${\bf b}_u$ takes into
 consideration the boundary conditions, and will be treated shortly. The matrix
 is a sparse block tridiagonal matrix of the form
@@ -662,20 +664,21 @@ Each of the linear systems in Eqns.\ \eqref{eq:xVelocityMatrix},
 template library for linear algebra called Eigen \cite{eigenweb}. Since the
 matrices are sparse, we exploit the special sparse datastructures available in
 Eigen, and solve the systems using a simplicial Cholesky factorization
-($LDL^T$). The choice of factorization is for efficiency, and can be used since
+($A=LDL^T$). The choice of factorization is for efficiency, and can be used since
 the sparse matrics are self-adjoint and positive definite. 
 
 \subsubsection{Stability and convergence to steady-state}
 
-An important question in any time-marching scheme for PDEs is the restriction
-on the time step $\Delta t$ necessary to achieve stability. For a nonlinear
-scheme such as the one employed, analytical stability restrictions are not
-available to the best knowledge of the author, but it is still possible to
-gather some insights from investigating the scheme. The restrictions on $\Delta
-t$ are dependent on $\alpha = \frac{\Delta t}{{\rm Re} (\Delta x)^2}$ from the
-diffusive term and $\beta = \frac{||{\bf u}||_{\infty} \Delta t}{\Delta x}$
-from the convective one. A possibility is therefore to choose $\Delta t$ as a
-constant times the minimum of these two restrictors, {\em i.e.\ } 
+An important question in any time-marching scheme for partial differential
+equations is the restriction on the time step $\Delta t$ necessary to achieve
+stability. For a nonlinear scheme such as the one employed, analytical
+stability restrictions are not available to the best knowledge of the author,
+but it is still possible to gather some insights from investigating the scheme.
+The restrictions on $\Delta t$ are dependent on $\alpha = \frac{\Delta t}{{\rm
+Re} (\Delta x)^2}$ from the diffusive term and $\beta = \frac{||{\bf
+u}||_{\infty} \Delta t}{\Delta x}$ from the convective one. A possibility is
+therefore to choose $\Delta t$ as a constant times the minimum of these two
+restrictors, i.e.\ 
 
 \begin{equation}
     \Delta t = C \min \left\{ \frac{\Delta x}{||{\bf u}||_{\infty}}, {\rm Re} (\Delta x)^2
@@ -704,10 +707,10 @@ other words, we require $\frac{||{\bf u}^{n+1} - {\bf u}^{n}||_{\infty}}{
 
 \subsubsection{Vorticity and stream function formulation}
 
-Our reference solutions are those of Ghia {\em et al.\ } \cite{ghia1982high},
+Our reference solutions are those of Ghia et al.\ \cite{ghia1982high},
 but their calculations are based on a vorticity and stream function formulation
 of the 2D Navier-Stokes equations. In order to compare our results more
-efficiently, we therefore compute these quantities at the end of the
+easily, we therefore compute these quantities at the end of the
 simulation. The scalar stream function $\psi$ is defined for incompressible
 flow in 2D through the velocity components such that 
 
@@ -717,7 +720,7 @@ flow in 2D through the velocity components such that
 \end{equation}
 %
 The difference between the stream function at two points equals the
-volumetric flux through a line contacting these points. Contour lines of the
+volumetric flux through a line connecting these points. Contour lines of the
 stream function are known as stream lines. Stream lines are parallel to the
 velocity field at all points in the domain, and trace the movement of particles
 in the fluid. Vorticity, on the other hand, describes the local spinning motion
@@ -742,16 +745,16 @@ to $\omega$:
 \end{equation}
 %
 Conversion from primitive variables to stream function and vorticity can thus
-be achieved by first calculating the vorticity at $(N-1)^2$ points, and
+be achieved by first calculating the vorticity at each grid point, and
 subsequently solving Eq.\ \eqref{eq:poissonVorticity} with zero boundary
 conditions. 
 
 \subsection{Bingham plastic fluid}
 \label{subsec:bingham}
 
-Extension of the 2D Navier-Stokes solver to the particular case of
+Extension of the two-dimensional Navier-Stokes solver to the particular case of
 Non-Newtonian fluids known as Bingham plastics introduces two difficulties.
-Firstly, the discretization of the viscous term is cumbersome. As introduced in
+Firstly, the temporal discretization of the viscous term is cumbersome. As introduced in
 Section \ref{sec:introduction}, the viscous term $\nabla^2 \bm{u}$ is replaced
 by $\nabla \cdot \bm{\tau}$ for these fluids, where 
 
@@ -764,7 +767,7 @@ by $\nabla \cdot \bm{\tau}$ for these fluids, where
 It is not possible to discretize this term implicitly in time while retaining
 the linearity of the system for $\tilde{\bm{u}}^{n+1}$. Secondly, the
 singularity of the apparent viscosity for $\dot{\gamma}=0$ cannot be handled
-directly computationally. 
+in a direct manner computationally. 
 
 \subsubsection{Creeping flow}
 
@@ -782,7 +785,7 @@ flows (${\rm Re}=0$), however, this problem vanishes automatically. Equation
     \nabla p + \nabla \cdot \eta ( \dot{\gamma} ) \dot{\bm{\gamma}} \,,
 \end{equation}
 %
-but when ${\rm Re} \rightarrow 0$, the left side of the equation vanishes and we are left
+but when ${\rm Re} = 0$, the left side of the equation vanishes and we are left
 with the problem of solving 
 
 \begin{equation}
@@ -792,7 +795,7 @@ with the problem of solving
 %
 under the incompressibility criterion of Eq.\ \eqref{eq:incompressibility}. We
 therefore only make a note that computational solutions exist for Bingham
-plastics in the transient case (see {\em e.g.\ } Vola {\em et al.\ }
+plastics in the transient case (see e.g.\ Vola et al.\
 \cite{vola2003laminar} or Muravleva \cite{muravleva2015uzawa}), and concentrate
 our efforts on the steady-state case when Eq.\ \eqref{eq:binghamPDE} is
 satisfied.
@@ -857,9 +860,9 @@ lines and zig-zagging behaviour for higher $m$ \cite{mitsoulis2001flow}.
     \caption
     {
         Papanastasiou regularization of the apparent viscosity. The black line
-        corresponds to the physical apparent viscosity, whereas blue is the
+        corresponds to the physical apparent viscosity, whereas blue uses the
         Papanastasiou viscosity $\eta_p$ for various $m$.  Larger values of $m$
-        are drawn with darker blue. 
+        are plotted with darker blue. 
     }
     \label{fig:regularization}
 \end{figure}
@@ -881,7 +884,7 @@ Eq.\ \eqref{eq:binghamPDE} in integral form can be written
 Discretizing the first component of the pressure term in Eq.\ is trivial: 
 
 \begin{equation}
-    \int_{\partial \Omega_{i,j}} p \bm{e}_x \cdot {\rm d}\bm{S} \approx
+    \int_{\partial \Omega_{i,j}} p {\rm d}\bm{S} \cdot \bm{e}_x \approx
     (p_{i+\frac{1}{2},j}-p_{i-\frac{1}{2},j}) \Delta x \,.
 \end{equation}
 %
@@ -929,7 +932,7 @@ using these approximations. The first component of the viscuous term in Eq.\
 \begin{align}
     \nonumber 
     \frac{1}{\Delta x} &\int_{\partial \Omega_{i,j}} \eta_p \dot{\bm{\gamma}}
-    \cdot \bm{e}_x \cdot {\rm d}\bm{S} \approx \\ 
+    \cdot {\rm d}\bm{S} \cdot \bm{e}_x \approx \\ 
     \nonumber 
     &+ \eta_p (\dot{\gamma}_{i+\frac{1}{2},j}) (\partial_x
     u_{i+\frac{1}{2},j} - \partial_y v_{i+\frac{1}{2},j}) \\
@@ -1083,30 +1086,20 @@ function and velocity vectors.
 \end{figure*}
 
 The system behaves as one would expect. Initially, the fluid is at rest in all
-parts of the domain. In the upper right plot of Figure \ref{fig:transient}, the
+parts of the domain. In the upper left plot of Figure \ref{fig:transient}, the
 system has only just started to be affected by the movement of the lid: there
 is a flow along the lid and a slight circulation from the upper right corner,
 through the center, and back to the upper left corner. In the next snapshot
 (upper right), this circulation has become more pronounced, as is evident from
 the relative size of the velocity vectors. In the lower left plot, the
-formation of a vortex is evident. Finally, at steady-state (lower right), the
-system has evolved to the final state where a constant circulation is present
-in the cavity, and we can even discern the creation of a secondary eddy in the
-lower right corner. Note that all the velocity vectors are parallel to the stream
-lines, as expected. 
+formation of a vortex is evident in the upper right corner. Finally, at
+steady-state (lower right), the system has evolved to its final configuration,
+where a constant circulation is present in the cavity, and we can even discern
+the creation of a secondary eddy in the lower right corner. Note that all the
+velocity vectors are parallel to the stream lines, as expected. 
 
 \subsection{Steady-state solution}
 \label{subsec:steady}
-
-Although it is well and good to see results which we deem reasonable
-intuitively, known reference solutions are necessary to validate the code. As
-such, we compare our findings with those of Ghia {\em et al.\ }
-\cite{ghia1982high}, since their paper is widely recognized as the reference
-for high-Re incompressible flow in the lid-driven cavity test case. Results
-have been computed with Reynolds numbers of 100, 200, 1000 and 3200 and grid
-sizes increasing from $N=17$ to $N=129$. In Figures \ref{fig:uGC} -
-\ref{fig:vorticity}, results are presented which visualize the steady-state
-distribution of velocities, stream function and vorticity. 
 
 \begin{figure*}[t]
     \centering
@@ -1160,8 +1153,8 @@ distribution of velocities, stream function and vorticity.
     \end{tikzpicture}
     \caption
     {
-        First component $u$ of velocity through $x=0.5$. The filled black
-        diamonds corresponds to tabulated results from Ghia {\em et al.\ }
+        First component $u$ of velocity through the slice $x=0.5$. The filled
+        black diamonds corresponds to tabulated results from Ghia et al.\
         \cite{ghia1982high}. \textcolor{red}{$\times$} $N=17$,
         \textcolor{blue}{$\circ$} $N=33$, \textcolor{teal}{$\triangle$} $N=65$,
         \textcolor{purple}{\huge $_{\cdot}$} $N=129$.  
@@ -1169,10 +1162,20 @@ distribution of velocities, stream function and vorticity.
     \label{fig:uGC}
 \end{figure*}
 
+Although it is well and good to see results which we deem reasonable
+intuitively, known reference solutions are necessary to validate the code. As
+such, we compare our findings with those of Ghia et al.\ \cite{ghia1982high},
+since their paper is widely recognized as the reference for high-Re
+incompressible flow in the lid-driven cavity test case. Results have been
+computed with Reynolds numbers of 100, 400, 1000 and 3200 and grid sizes
+increasing from $N=17$ to $N=129$. In Figures \ref{fig:uGC} -
+\ref{fig:vorticity}, results are presented which visualize the steady-state
+distribution of velocities, stream function and vorticity. 
+
 Figure \ref{fig:uGC} shows how the first component of the velocity, $u$, varies
 in the plane $x=0.5$, a slice through the geometric centre of the computational
 domain. Note especially the filled, black diamonds, which correspond to values
-tabulated by Ghia {\em et al.\ } in their paper \cite{ghia1982high}. For ${\rm
+tabulated by Ghia et al.\ in their paper \cite{ghia1982high}. For ${\rm
 Re} = 100$, our results are very close to the reference even for the smallest
 grid sizes. Our solver struggles more as Re increases, but it is still evident
 that grid refinement gives convergence. For the highest grid resolution, our
@@ -1232,8 +1235,8 @@ reference solutions in the same manner as for $u$.
     \end{tikzpicture}
     \caption
     {
-        Second component $v$ of velocity through $y=0.5$. The filled black
-        diamonds corresponds to tabulated results from Ghia {\em et al.\ }
+        Second component $v$ of velocity through the slice $y=0.5$. The filled black
+        diamonds corresponds to tabulated results from Ghia et al.\
         \cite{ghia1982high}. \textcolor{red}{$\times$} $N=17$,
         \textcolor{blue}{$\circ$} $N=33$, \textcolor{teal}{$\triangle$} $N=65$,
         \textcolor{purple}{\huge $_{\cdot}$} $N=129$. 
@@ -1243,14 +1246,21 @@ reference solutions in the same manner as for $u$.
 
 Figure \ref{fig:stream} shows the distribution of the stream function and
 velocity field at steady-state. When compared to Figure 3 in the paper by Ghia
-{\em et al.}, we see that the streamline pattern is near identical for all
+et al.\, we see that the streamline pattern is near identical for all
 cases. The stream lines which we have plotted as contours of $\psi$ are the
 same as those used in the reference. Our inclusion of the velocity field at
 selected places in the domain is merely to give an intuitive understanding of
-the distribution of flow. Figure \ref{fig:vorticity} depicts the vorticity
+the distribution of flow. As the Reynolds number gets larger, we observe that
+the secondary eddies become more prominent, in agreement with our expectations
+from the literature. Figure \ref{fig:vorticity} depicts the vorticity
 distribution in the domain, including contours. Also here, our results are
 indistinguishable from the results as shown in Figure 4 in the reference
 \cite{ghia1982high}. 
+
+\begin{itemize}
+    \item {\bf Comment on values of $\psi$, $\omega$ and $\bm{u}$? Colorbars?}
+    \item {\bf Expand captions for $\psi$- and $\omega$-results}
+\end{itemize}
 
 \begin{figure*}[t]
     \centering
@@ -1335,8 +1345,8 @@ indistinguishable from the results as shown in Figure 4 in the reference
 \label{subsec:efficiency}
 
 \begin{itemize}
-    \item Computational complexity of the linear systems 
-    \item Runtime (and no of time steps) as a function of Re and $N$
+    \item {\bf Runtime (and no of time steps) as a function of Re and $N$}
+    \item {\bf Runtime per iteration? Should be $O(N^4)$, right? }
 \end{itemize}
 
 \section{Suggestions for further work}
@@ -1352,6 +1362,10 @@ methods. It would also be very interesting to try and develop a transient
 solver of the same type as we have implemented for the Newtonian case,
 following the idea of semi-implicitly temporal discretization of the viscuous
 term. 
+
+\begin{itemize}
+    \item {\bf 3D, arbitrarily shaped domains, moving boundaries}
+\end{itemize}
 
 For high Reynolds numbers, use of the time-marching PDE solver becomes a very
 inefficient method to obtain steady-state solutions. Higher grid sizes and
@@ -1369,12 +1383,18 @@ functions used within each time step.
 We have not utilized proper vectorization when updating the load vectors for
 the linear systems, but instead calculated each component individually. This
 could perhaps reduce the time spent in each time step marginally, but the main
-computational effort is in solving the liner systems of equations. We could
+computational effort is in solving the linear systems of equations. We could
 probably not improve on the actual solvers provided by the Eigen library, but
 inspection of the (block) tridiagonal matrices make it apparent that they could
 be suitable for variants of the Hockney algorithm \cite{hockney1965fast}, which
 decouples the system of equations and utilizes the discrete Fourier transform
 to compute the solution of each such decoupled system rapidly. 
+
+\begin{itemize}
+    \item {\bf Expand on Hockney algorithm?}
+    \item {\bf The decoupled systems are diagonal and solved in $O(N)$}
+    \item {\bf Solution of the decoupled systems can be parallelized!}
+\end{itemize}
 
 \section{Conclusions}
 \label{sec:conclusion}
@@ -1386,11 +1406,11 @@ agreement with those previously presented in the literature for Reynolds
 numbers at least up to 3200, although computations converges slower and become
 more computationally expensive quickly as Re increases.  In addition to this
 implementation, we have discussed possible extensions to the special class of
-Non-Newtonian fluilds known as Bingham plastics is given in the case of
+Non-Newtonian fluilds known as Bingham plastics in the case of
 Reynolds number zero (creeping flow). There is nothing novel about the methods
 employed and the resulting code, but this project report nevertheless serves as
 a literature review which covers an introduction to the problem at hand, and
-which validates our code through well-documented tests. 
+which validates the robustness of our code through well-documented tests. 
 
 \section*{References}
 \bibliographystyle{elsarticle-num}
