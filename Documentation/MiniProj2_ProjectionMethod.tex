@@ -319,9 +319,13 @@ accompanying comments. Suggestions for possible extensions are given in Section
 \subsection{Newtonian fluid}
 \label{subsec:newtonian}
 
-\begin{itemize}
-    \item {\bf write something general}
-\end{itemize}
+For the case of a Newtonian fluid, our aim is to find the solution of the
+unsteady (transient) Navier-Stokes equations. The coupling of the velocity and
+pressure poses a difficulty however, and must be approached in a manner which
+allows consistent discretization in time. Subsequently, the spatial domain must
+be considered, and the resulting systems of equations solved.  We presently
+explain the chosen techniques to do so, and include notes on how they have been
+implemented. 
 
 \subsubsection{Projection method}
 
@@ -976,19 +980,6 @@ required for convergence to steady-state is set to $\epsilon=10^{-5}$.
 \subsection{Analysis of time step size}
 \label{subsec:timeStep}
 
-Figure \ref{fig:dt} shows the results from our numerical experiment to
-determine maximum time step size. As expected, a reduction in temporal step
-size is required for increases in both Reynolds number and the amount of grid
-points. Based on this trend, we decided to use a formula of the form $\Delta t
-\propto \Delta x / {\rm Re}$ when choosing the time step. The dashed lines in
-Figure \ref{fig:dt} show corresponding lines with a proportionality factor of
-500. With this choice of time step, our simulations remain stable for as large
-grid sizes as we have considered ($N$ up to 129) and ${\rm Re} \leq 1000$.
-Although we concentrate on the cases where ${\rm Re} \leq 1000$, it is
-naturally desirable for the code to work for as high Re as possible. For larger
-Reynolds numbers, we therefore employ $\Delta t = 100 \Delta x / {\rm Re}$,
-which works (at least) up to $N=129$, ${\rm Re}=3200$. 
-
 \begin{figure}[htb]
     \centering
     \tikzsetnextfilename{dt}
@@ -1024,16 +1015,6 @@ which works (at least) up to $N=129$, ${\rm Re}=3200$.
     }
     \label{fig:dt}
 \end{figure}
-
-
-\subsection{Transient behaviour}
-\label{subsec:transient}
-
-In order to investigate how the impusively started system evolves to
-steady-state, we initiated a test case with ${\rm Re=200}$ and $N=129$,
-outputing the system state at even intervals. Figure \ref{fig:transient} shows
-the state of the system at four different times through plots of the stream
-function and velocity vectors. 
 
 \begin{figure*}[t]
     \centering
@@ -1076,7 +1057,7 @@ function and velocity vectors.
     }
     \caption
     {
-        Transient results for ${\rm Re}=200$ at different times: $t=0.04$
+        Transient results for ${\rm Re}=200$, $N=129$ at different times: $t=0.04$
         (upper left), $t=0.60$ (upper right), $t=1.61$ (lower left) and $t=10$
         (lower right). The surface plots exhibit the stream function $\psi$, its
         contours are stream lines, and the vectors correspond to the velocity
@@ -1085,21 +1066,27 @@ function and velocity vectors.
     \label{fig:transient}
 \end{figure*}
 
-The system behaves as one would expect. Initially, the fluid is at rest in all
-parts of the domain. In the upper left plot of Figure \ref{fig:transient}, the
-system has only just started to be affected by the movement of the lid: there
-is a flow along the lid and a slight circulation from the upper right corner,
-through the center, and back to the upper left corner. In the next snapshot
-(upper right), this circulation has become more pronounced, as is evident from
-the relative size of the velocity vectors. In the lower left plot, the
-formation of a vortex is evident in the upper right corner. Finally, at
-steady-state (lower right), the system has evolved to its final configuration,
-where a constant circulation is present in the cavity, and we can even discern
-the creation of a secondary eddy in the lower right corner. Note that all the
-velocity vectors are parallel to the stream lines, as expected. 
+Figure \ref{fig:dt} shows the results from our numerical experiment to
+determine maximum time step size. As expected, a reduction in temporal step
+size is required for increases in both Reynolds number and the amount of grid
+points. Based on this trend, we decided to use a formula of the form $\Delta t
+\propto \Delta x / {\rm Re}$ when choosing the time step. The dashed lines in
+Figure \ref{fig:dt} show corresponding lines with a proportionality factor of
+500. With this choice of time step, our simulations remain stable for as large
+grid sizes as we have considered ($N$ up to 129) and ${\rm Re} \leq 1000$.
+Although we concentrate on the cases where ${\rm Re} \leq 1000$, it is
+naturally desirable for the code to work for as high Re as possible. For larger
+Reynolds numbers, we therefore employ $\Delta t = 100 \Delta x / {\rm Re}$,
+which works (at least) up to $N=129$, ${\rm Re}=3200$. 
 
-\subsection{Steady-state solution}
-\label{subsec:steady}
+\subsection{Transient behaviour}
+\label{subsec:transient}
+
+In order to investigate how the impusively started system evolves to
+steady-state, we initiated a test case with ${\rm Re=200}$ and $N=129$,
+outputing the system state at even intervals. Figure \ref{fig:transient} shows
+the state of the system at four different times through plots of the stream
+function and velocity vectors. 
 
 \begin{figure*}[t]
     \centering
@@ -1162,6 +1149,22 @@ velocity vectors are parallel to the stream lines, as expected.
     \label{fig:uGC}
 \end{figure*}
 
+The system behaves as one would expect. Initially, the fluid is at rest in all
+parts of the domain. In the upper left plot of Figure \ref{fig:transient}, the
+system has only just started to be affected by the movement of the lid: there
+is a flow along the lid and a slight circulation from the upper right corner,
+through the center, and back to the upper left corner. In the next snapshot
+(upper right), this circulation has become more pronounced, as is evident from
+the relative size of the velocity vectors. In the lower left plot, the
+formation of a vortex is evident in the upper right corner. Finally, at
+steady-state (lower right), the system has evolved to its final configuration,
+where a constant circulation is present in the cavity, and we can even discern
+the creation of a secondary eddy in the lower right corner. Note that all the
+velocity vectors are parallel to the stream lines, as expected. 
+
+\subsection{Steady-state solution}
+\label{subsec:steady}
+
 Although it is well and good to see results which we deem reasonable
 intuitively, known reference solutions are necessary to validate the code. As
 such, we compare our findings with those of Ghia et al.\ \cite{ghia1982high},
@@ -1171,19 +1174,6 @@ computed with Reynolds numbers of 100, 400, 1000 and 3200 and grid sizes
 increasing from $N=17$ to $N=129$. In Figures \ref{fig:uGC} -
 \ref{fig:vorticity}, results are presented which visualize the steady-state
 distribution of velocities, stream function and vorticity. 
-
-Figure \ref{fig:uGC} shows how the first component of the velocity, $u$, varies
-in the plane $x=0.5$, a slice through the geometric centre of the computational
-domain. Note especially the filled, black diamonds, which correspond to values
-tabulated by Ghia et al.\ in their paper \cite{ghia1982high}. For ${\rm
-Re} = 100$, our results are very close to the reference even for the smallest
-grid sizes. Our solver struggles more as Re increases, but it is still evident
-that grid refinement gives convergence. For the highest grid resolution, our
-results align perfecly with the reference for ${\rm Re} \leq 1000$, and they
-even approach the reference solution for ${\rm Re} = 3200$. Similar results for
-the second velocity component, $v$, are given in Figure \ref{fig:vGC}. Here,
-the slice is through $y=0.5$. We observe that the results tend towards the
-reference solutions in the same manner as for $u$. 
 
 \begin{figure*}[t]
     \centering
@@ -1244,23 +1234,18 @@ reference solutions in the same manner as for $u$.
     \label{fig:vGC}
 \end{figure*}
 
-Figure \ref{fig:stream} shows the distribution of the stream function and
-velocity field at steady-state. When compared to Figure 3 in the paper by Ghia
-et al.\, we see that the streamline pattern is near identical for all
-cases. The stream lines which we have plotted as contours of $\psi$ are the
-same as those used in the reference. Our inclusion of the velocity field at
-selected places in the domain is merely to give an intuitive understanding of
-the distribution of flow. As the Reynolds number gets larger, we observe that
-the secondary eddies become more prominent, in agreement with our expectations
-from the literature. Figure \ref{fig:vorticity} depicts the vorticity
-distribution in the domain, including contours. Also here, our results are
-indistinguishable from the results as shown in Figure 4 in the reference
-\cite{ghia1982high}. 
-
-\begin{itemize}
-    \item {\bf Comment on values of $\psi$, $\omega$ and $\bm{u}$? Colorbars?}
-    \item {\bf Expand captions for $\psi$- and $\omega$-results}
-\end{itemize}
+Figure \ref{fig:uGC} shows how the first component of the velocity, $u$, varies
+in the plane $x=0.5$, a slice through the geometric centre of the computational
+domain. Note especially the filled, black diamonds, which correspond to values
+tabulated by Ghia et al.\ in their paper \cite{ghia1982high}. For ${\rm
+Re} = 100$, our results are very close to the reference even for the smallest
+grid sizes. Our solver struggles more as Re increases, but it is still evident
+that grid refinement gives convergence. For the highest grid resolution, our
+results align perfecly with the reference for ${\rm Re} \leq 1000$, and they
+even approach the reference solution for ${\rm Re} = 3200$. Similar results for
+the second velocity component, $v$, are given in Figure \ref{fig:vGC}. Here,
+the slice is through $y=0.5$. We observe that the results tend towards the
+reference solutions in the same manner as for $u$. 
 
 \begin{figure*}[t]
     \centering
@@ -1302,7 +1287,13 @@ indistinguishable from the results as shown in Figure 4 in the reference
             \end{axis}
         \end{tikzpicture}
     }
-    \caption{Stream function for different Reynold's numbers}
+    \caption
+    {
+        Surface plot of the stream function $\psi$ for several different
+        Reynold's numbers. The stream lines are the contours of $\psi$ used in
+        the reference by Ghia et al.\ \cite{ghia1982high} Also plotted are
+        selected vectors from the computed velocity field. 
+    }
     \label{fig:stream}
 \end{figure*}
 
@@ -1337,17 +1328,66 @@ indistinguishable from the results as shown in Figure 4 in the reference
             \end{axis}
         \end{tikzpicture}
     }
-    \caption{Vorticity for different Reynold's numbers}
+    \caption
+    {
+        Surface plot of the vorticity $\omega$ for several different Reynold's
+        numbers. The contour lines are the same as those used in the reference
+        by Ghia et al.\ \cite{ghia1982high}
+    }
     \label{fig:vorticity}
 \end{figure*}
 
-\subsection{Computational efficiency?}
+Figure \ref{fig:stream} shows the distribution of the stream function and
+velocity field at steady-state. When compared to Figure 3 in the paper by Ghia
+et al.\, we see that the streamline pattern is near identical for all
+cases. The stream lines which we have plotted as contours of $\psi$ are the
+same as those used in the reference. Our inclusion of the velocity field at
+selected places in the domain is merely to give an intuitive understanding of
+the distribution of flow. As the Reynolds number gets larger, we observe that
+the secondary eddies become more prominent, in agreement with our expectations
+from the literature. Figure \ref{fig:vorticity} depicts the vorticity
+distribution in the domain, including contours. Also here, our results are
+indistinguishable from the results as shown in Figure 4 in the reference
+\cite{ghia1982high}. 
+
+\subsection{Computational efficiency}
 \label{subsec:efficiency}
 
-\begin{itemize}
-    \item {\bf Runtime (and no of time steps) as a function of Re and $N$}
-    \item {\bf Runtime per iteration? Should be $O(N^4)$, right? }
-\end{itemize}
+Since computational efficiency is an important factor in our ability to
+simulate realistic scenarios, 
+
+Just checkout \ref{tab:runtime}. Runtime per iteration is $\mathcal{O}(N^2)$!
+
+\begin{table}[htb]
+    \centering
+    \begin{tabular}{ccccc}
+        \hline
+        Re   & $N$ & Runtime & Iter. & Time per iter.          \\
+        \hline
+        100  & 17  & 0.09    & 58    & 1.20690 $\cdot 10^{-3}$ \\
+        400  & 17  & 0.61    & 552   & 1.08696 $\cdot 10^{-3}$ \\
+        1000 & 17  & 1.93    & 1710  & 1.12881 $\cdot 10^{-3}$ \\
+        3200 & 17  & 29.9    & 26282 & 1.13728 $\cdot 10^{-3}$ \\
+        \hline
+        100  & 33  & 0.67    & 99    & 4.74747 $\cdot 10^{-3}$ \\ 
+        400  & 33  & 4.17    & 841   & 4.73246 $\cdot 10^{-3}$ \\ 
+        1000 & 33  & 14.62   & 3035  & 4.75124 $\cdot 10^{-3}$ \\ 
+        3200 & 33  & 154.02  & 32644 & 4.71235 $\cdot 10^{-3}$ \\ 
+        \hline
+        100  & 65  & 6.05    & 174   & 1.97126 $\cdot 10^{-2}$ \\ 
+        400  & 65  & 31.3    & 1385  & 2.06426 $\cdot 10^{-2}$ \\ 
+        1000 & 65  & 88.99   & 4248  & 2.01154 $\cdot 10^{-2}$ \\ 
+        3200 & 65  & 1226.28 & 60264 & 2.03035 $\cdot 10^{-2}$ \\ 
+        \hline
+        100  & 129 & 68.45   & 308   & 8.82792 $\cdot 10^{-2}$ \\ 
+        400  & 129 & 260.37  & 2412  & 9.06758 $\cdot 10^{-2}$ \\ 
+        1000 & 129 & 680.18  & 7118  & 8.97275 $\cdot 10^{-2}$ \\ 
+        3200 & 129 & 7289.88 & 81448 & 8.90100 $\cdot 10^{-2}$ \\ 
+        \hline
+    \end{tabular}
+    \caption{Runtimes etcs}
+    \label{tab:runtime}
+\end{table}
 
 \section{Suggestions for further work}
 \label{sec:further}
