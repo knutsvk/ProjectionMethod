@@ -1354,9 +1354,27 @@ indistinguishable from the results as shown in Figure 4 in the reference
 \label{subsec:efficiency}
 
 Since computational efficiency is an important factor in our ability to
-simulate realistic scenarios, 
+simulate realistic scenarios, it is beneficial to evaluate the performance of
+the code. For each pair of parameters Re and $N$, Table \ref{tab:runtime}
+contains the total runtime of the code in seconds, the number of iterations required to
+satistfy the steady-state tolerance and the runtime per iteration. The latter
+is computed by timing the while-loop only and dividing the result by the
+iteration count. 
 
-Just checkout \ref{tab:runtime}. Runtime per iteration is $\mathcal{O}(N^2)$!
+As is evident, the runtime quickly blows up as the Reynolds number and amount
+of grid points both increase. For the highest combination run, the simulation
+took just over two hours in total. Both parameters are inversely proportional to our
+choice of time step, so more iterations are needed to reach the same time.
+Additionally, the total time required to reach steady-state increases with Re.
+There is not, however, very much to be done computationally about these
+problems, except perhaps finding a choice of time step which is more optimally
+chosen as the largest permissible. The average time per iteration, on the other
+hand, is determined solely by the choice of spatial accuracy. Comparing the
+average runtime per iteration for different values of $N$, we note that it is
+approximately of the order $\mathcal{O}(N^2)$, i.e.\ linear in terms of the
+matrix sizes for the systems being solved. This is as good as we can hope for
+for the problem of solving a system of equations given a decomposed matrix, and
+only possible since the matrices are sparse block-tridiagonal in nature. 
 
 \begin{table}[htb]
     \centering
@@ -1385,7 +1403,12 @@ Just checkout \ref{tab:runtime}. Runtime per iteration is $\mathcal{O}(N^2)$!
         3200 & 129 & 7289.88 & 81448 & 8.90100 $\cdot 10^{-2}$ \\ 
         \hline
     \end{tabular}
-    \caption{Runtimes etcs}
+    \caption
+    {
+        Total runtime, number of iterations required to reach steady-state and
+        runtime per iteration for the various combinations of Re and $N$. The
+        runtimes are measured in seconds. 
+    }
     \label{tab:runtime}
 \end{table}
 
@@ -1423,18 +1446,17 @@ functions used within each time step.
 We have not utilized proper vectorization when updating the load vectors for
 the linear systems, but instead calculated each component individually. This
 could perhaps reduce the time spent in each time step marginally, but the main
-computational effort is in solving the linear systems of equations. We could
-probably not improve on the actual solvers provided by the Eigen library, but
-inspection of the (block) tridiagonal matrices make it apparent that they could
-be suitable for variants of the Hockney algorithm \cite{hockney1965fast}, which
-decouples the system of equations and utilizes the discrete Fourier transform
-to compute the solution of each such decoupled system rapidly. 
-
-\begin{itemize}
-    \item {\bf Expand on Hockney algorithm?}
-    \item {\bf The decoupled systems are diagonal and solved in $O(N)$}
-    \item {\bf Solution of the decoupled systems can be parallelized!}
-\end{itemize}
+computational effort is in solving the linear systems of equations. It would be
+difficult to improve improve on the actual solvers provided by the Eigen
+library (which, as we have seen, provide near-linear solving), but inspection
+of the (block) tridiagonal matrices make it apparent that they could be
+suitable for variants of the Hockney algorithm \cite{hockney1965fast}, which
+decouples the system of equations to $N$ diagonal systems, easily solved
+rapidly (in $\mathcal{O}(N)$ operations) by utilizing the discrete Fourier
+transform. Even further improvement could be possible by noting that the
+decoupled systems of equations enable parallelization. Thus, in theory, the
+computational complexity of the calculations performed in each time step could
+be reduced down towards $\mathcal{O}(N)$. 
 
 \section{Conclusions}
 \label{sec:conclusion}
