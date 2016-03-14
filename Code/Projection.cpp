@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     cout << "Building of matrices complete. Time elapsed: " 
         << double(initiationEnd-initiationStart) / CLOCKS_PER_SEC 
         << " seconds." << endl 
-        << "Advancing in clock until steady-state..." << endl; 
+        << "Advancing in time until steady-state..." << endl; 
 
     clock_t iterateStart = clock(); 
 
@@ -112,8 +112,8 @@ int main(int argc, char* argv[])
 
     clock_t iterateEnd = clock();
 
-    cout << "Steady state reached after " << iter << " iterations."
-        << "Time elapsed: " 
+    cout << "Steady state reached after " << iter 
+        << " iterations. " << "Time elapsed: " 
         << double(iterateEnd-iterateStart) / CLOCKS_PER_SEC 
         << " seconds." << endl << "Time per iteration: " 
         << double(iterateEnd-iterateStart) / CLOCKS_PER_SEC / iter
