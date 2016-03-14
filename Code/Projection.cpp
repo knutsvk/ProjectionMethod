@@ -24,11 +24,17 @@ int main(int argc, char* argv[])
     double dx = 1.0/N;          // Grid spacing
     double t = 0.0;             // Time counter
     double dt = 500*dx/Re;      // Time step
-    if(Re>1000) dt /= 5.0;      // Ensure time step is small enough for high-Re
+    if(Re>1000) dt /= 5.0;      // Ensure clock step is small enough for high-Re
     double tol = 1e-5;          // Tolerance for convergence
 
     ofstream fs;           // File stream for writing res
     char filename[50];
+
+    cout << "Incompressible flow in a lid-driven cavity." << endl
+        << "Runtime parameters: N = " << N << ", Re = " << Re 
+        << endl << "Building matrices... " << endl; 
+
+    clock_t initiationStart = clock(); 
 
     // Initiate solution vectors
     VectorXd u = VectorXd::Zero(N*(N-1));
@@ -66,7 +72,14 @@ int main(int argc, char* argv[])
     SimplicialLDLT<SparseMatrix<double> > solver_psi;
     solver_psi.compute(Sp_A_psi);
 
-    cout << "iter" << "\t" << "time" << "\t" << "||u_c||" << "\t" << "relCha" << "\n";
+    clock_t initiationEnd = clock(); 
+
+    cout << "Building of matrices complete. Time elapsed: " 
+        << double(initiationEnd-initiationStart) / CLOCKS_PER_SEC 
+        << " seconds." << endl 
+        << "Advancing in clock until steady-state..." << endl; 
+
+    clock_t iterateStart = clock(); 
 
     int iter = 0;
     while(eps.lpNorm<Infinity>()/u.lpNorm<Infinity>()>tol)
@@ -87,7 +100,7 @@ int main(int argc, char* argv[])
         // Solve Ap * p = bp
         p = solver_p.solve(f_p);
         
-        // Find u and v at next time step
+        // Find u and v at next clock step
         updateVelocities(U, V, p, N, dt, u, v);
         
         t += dt;
@@ -95,20 +108,25 @@ int main(int argc, char* argv[])
 
         eps = u-prev;
         prev = u;
-
-//        if(iter%10==0)
-            cout << iter << "\t" << iter*dt << "\t" 
-                << eps.squaredNorm() << "\t" << eps.lpNorm<Infinity>()/u.lpNorm<Infinity>() << "\n";
     }
 
-    cout << "Steady state reached." << endl;
+    clock_t iterateEnd = clock();
+
+    cout << "Steady state reached after " << iter << " iterations."
+        << "Time elapsed: " 
+        << double(iterateEnd-iterateStart) / CLOCKS_PER_SEC 
+        << " seconds." << endl << "Time per iteration: " 
+        << double(iterateEnd-iterateStart) / CLOCKS_PER_SEC / iter
+        << " seconds." << endl; 
 
     // Calculate vorticity vector and stream function
     VectorXd omega = buildVorticityVector(u, v, N);
     VectorXd psi = solver_psi.solve(omega);
 
-    // Print results to file
+    cout << "Printing results to file... " << endl; 
 
+    // Print results to file
+/*
     sprintf(filename, "../Results/psi_N%d_Re%d.out", N, int(Re));
     fs.open(filename, std::fstream::out);
     for(i=0; i<N-1; i++)
@@ -177,4 +195,8 @@ int main(int argc, char* argv[])
         }
     }
     fs.close(); 
+*/
+    cout << "All done. Total runtime: " 
+        << double(clock() - initiationStart) / CLOCKS_PER_SEC 
+        << " seconds. " << endl; 
 }

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstdio>
+#include <ctime>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
