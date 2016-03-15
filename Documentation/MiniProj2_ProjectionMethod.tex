@@ -1426,10 +1426,6 @@ solver of the same type as we have implemented for the Newtonian case,
 following the idea of semi-implicitly temporal discretization of the viscuous
 term. 
 
-\begin{itemize}
-    \item {\bf 3D, arbitrarily shaped domains, moving boundaries}
-\end{itemize}
-
 For high Reynolds numbers, use of the time-marching PDE solver becomes a very
 inefficient method to obtain steady-state solutions. Higher grid sizes and
 smaller time steps are necessary for convergence, so obtaining results becomes
@@ -1457,6 +1453,13 @@ transform. Even further improvement could be possible by noting that the
 decoupled systems of equations enable parallelization. Thus, in theory, the
 computational complexity of the calculations performed in each time step could
 be reduced down towards $\mathcal{O}(N)$. 
+
+Finally, there are natural extensions to provide in terms of how interesting
+systems we can look at. Inclusion of arbitrarily shaped domains can be done by
+using adaptive mesh refinement \cite{schoch2013eulerian, lovett2015adaptive}
+coupled with e.g.\ level set and ghost fluid methods \cite{schoch2013eulerian}
+or Cartesian cut cells \cite{klein2009well}, which would also allow for moving
+boundaries.  Additionally, extensions to three dimensions would be beneficial. 
 
 \section{Conclusions}
 \label{sec:conclusion}
