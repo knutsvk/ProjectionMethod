@@ -99,7 +99,7 @@ Navier-Stokes equations are an extension of Eqns.\ \eqref{eq:continuity} and
 \eqref{eq:cauchy} derived under the assumptions that the stress tensor
 $\bm{\tau}$ is a linear function of the strain tensor $\dot{\bm{\gamma}}=\nabla
 \bm{u} + (\nabla \bm{u})^T$, that $\nabla \cdot \bm{\tau} = 0$ for fluids at
-rest, and that the fluid is isotropoc. Given these assumptions, Eq.\
+rest, and that the fluid is isotropic. Given these assumptions, Eq.\
 \eqref{eq:cauchy} can be rewritten
 
 \begin{equation}
@@ -114,10 +114,10 @@ respectively. Fluids which obey the Navier-Stokes equations as given by Eqns.\
 \eqref{eq:continuity} and \eqref{eq:compressible} are labelled Newtonian
 fluids.  The second coefficient of viscosity, $\lambda$, is related to bulk
 viscosity and disappears for incompressible flow, which we restrict ourselves
-to in this project. Consequently, we shall simply refer to $\mu$ as the
-viscosity of the fluid in the following. 
+to in this project. Consequently, we simply refer to $\mu$ as the
+viscosity of the fluid. 
 
-When the density $\rho$ is constant within each control volume of the fluid,
+When the density, $\rho$, is constant within each control volume of the fluid,
 the flow is said to be isochoric or incompressible. A vast amount of cases in
 continuum mechanics relate to incompressible flow, and several simplifications
 arise in the description of the fluid. Firstly, Eq.\ \eqref{eq:continuity}
@@ -147,7 +147,7 @@ variables such that $\bm{u} \rightarrow \frac{1}{a} \bm{u}$, $\partial_t \righta
 \frac{L}{a} \partial_t$ and $\nabla \rightarrow L \nabla$, where $L$ is
 the length of the system under consideration and $a$ is the maximum absolute
 value of the velocity. Applying these changes to Eq.\ \eqref{eq:incompressible}
-and multiplying through by $L/(\rho a^2)$ gives the dimensionless equation 
+and multiplying through by $L/\rho a^2$ gives the dimensionless equation 
 
 \begin{equation}
     \partial_t \bm{u} + \bm{u} \cdot \nabla \bm{u} = - \frac{1}{\rho a^2}
@@ -155,8 +155,8 @@ and multiplying through by $L/(\rho a^2)$ gives the dimensionless equation
     \label{eq:dimensionless}
 \end{equation}
 %
-Here, ${\rm Re} = \rho a L / \mu$ is the Reynolds number of the flow, which
-equals the ratio of intertial forces to viscous ones. Note that the pressure
+Here, ${\rm Re} = \rho a L/\mu$ is the Reynolds number of the flow, which
+equals the ratio of inertial forces to viscous ones. Note that the pressure
 is still measured in physical units, as we wish to utilize different scalings
 depending on the Reynolds number. Low Reynolds numbers correspond to laminar
 flow, where the viscous forces are dominant. In this case, we let $p
@@ -170,7 +170,7 @@ becomes
 \end{equation}
 %
 High Reynolds numbers, on the other hand, correspond to turbulent flow with the
-most important contributions arising from the intertial forces. We then let $p
+most important contributions arising from the inertial forces. We then let $p
 \rightarrow \frac{1}{\rho a^2} p$, yielding the alternative formulation 
 
 \begin{equation}
@@ -236,13 +236,15 @@ Bingham plastic fluids, named after Eugene Cook Bingham for his investigation
 into them in 1916 \cite{bingham1916investigation}, have a threshold stress
 $\tau_0$, below which they do not yield to applied forces. For the
 nondimensionalized stress tensor, the yield stress corresponds to the
-dimensionless Bingham number $B = \tau_0 L/(\mu a)$. In other words, the strain
+dimensionless Bingham number $B = \tau_0 L/\mu a$. In other words, the strain
 rate is zero unless a stress higher than that characteristic stress is applied.
 Physically, this means that they behave as solids for small stresses, something
-which leads to interesting behaviour such as non-flat surfaces at rest. Regions
-where the flow is such that $\tau < B$ are also known as unyielded
-regions. The relationship between stress and shear rate for Bingham plastics is
-therefore
+which leads to interesting behaviour such as non-flat surfaces at rest. This
+can be demonstrated by distorting the surface of a mayonnaise container:
+gravity alone is not strong enough to surpass the yield stress, and the surface
+remains in its distorted state.  Regions where the flow is such that $\tau < B$
+are also known as unyielded regions. The relationship between stress and shear
+rate for Bingham plastics is therefore
 
 \begin{equation}
     \dot{\gamma} = \begin{cases}
@@ -308,10 +310,11 @@ schematically.
 
 In Section \ref{sec:numerical}, the numerical methods employed to solve the
 incompressible Navier-Stokes equations for Newtonian fluids in the lid-driven
-cavity are explained, in addition to the extensions needed for creeping flow of
-Bingham plastics. Section \ref{sec:results} contains our results with
-accompanying comments. Suggestions for possible extensions are given in Section
-\ref{sec:further}, while Section \ref{sec:conclusion} concludes the report. 
+cavity are explained. In addition to this, the extensions needed to simulate
+creeping flow of Bingham plastics are discussed. Section \ref{sec:results}
+contains our results with accompanying comments. Suggestions for possible
+extensions are given in Section \ref{sec:further}, while Section
+\ref{sec:conclusion} concludes the report. 
 
 \section{Numerical methods}
 \label{sec:numerical}
@@ -355,7 +358,7 @@ together. Here, we have introduced the notation $\bm{u}^n = \bm{u}(n \Delta
 t)$, in addition to denoting by $\tilde{\bm{u}}^{n+1}$ the velocity at the
 intermediate time step.  It is particularly important to utilize the implicit
 temporal discretization for flows with low Reynolds numbers and for meshes that
-are stretched near boundaries, since otherwise the numerical viscous stability
+are stretched near boundaries, because otherwise the numerical viscous stability
 restriction becomes severe in these cases. 
 
 Given a suitable spatial discretization scheme, Eq.\ \eqref{eq:firstStep} is
@@ -645,12 +648,12 @@ debate in the literature \cite{liu1995projection}. As there are no physical
 boundary conditions on $p$, one could take the inner product of Eq.\
 \eqref{eq:hiRe} with either the unit normal or unit tangent at the boundary,
 and retrieve equally feasile boundary conditions. In general, the former is
-preferred by most people, since the condition relates naturally to the
-projection operator. Requiring that the space of divergence-free vector fields
-is orthogonal to the space of irrotational vector fields results in the boundary
-condition $\bm{u}^{n+1} \cdot \bm{n} = 0$. Taking the inner product of Eq.\
-\eqref{eq:secondStep} with $\bm{n}$ thus gives $\partial_n p = 0$ on the
-domain border. Our boundary conditions for the pressure are then
+preferred, since the condition relates naturally to the projection operator.
+Requiring that the space of divergence-free vector fields is orthogonal to the
+space of irrotational vector fields results in the boundary condition
+$\bm{u}^{n+1} \cdot \bm{n} = 0$. Taking the inner product of Eq.\
+\eqref{eq:secondStep} with $\bm{n}$ thus gives $\partial_n p = 0$ on the domain
+border. Our boundary conditions for the pressure are then
 
 \begin{align}
     \nonumber
@@ -667,9 +670,10 @@ Each of the linear systems in Eqns.\ \eqref{eq:xVelocityMatrix},
 \eqref{eq:yVelocityMatrix} and \eqref{eq:pressureMatrix} are solved using a C++
 template library for linear algebra called Eigen \cite{eigenweb}. Since the
 matrices are sparse, we exploit the special sparse datastructures available in
-Eigen, and solve the systems using a simplicial Cholesky factorization
-($A=LDL^T$). The choice of factorization is for efficiency, and can be used since
-the sparse matrics are self-adjoint and positive definite. 
+Eigen, and solve the systems using a direct simplicial Cholesky factorization
+without square root ($A=LDL^T$). The choice of factorization is for efficiency,
+and can be used since the sparse matrics are Hermitian (self-adjoint) and
+positive definite. 
 
 \subsubsection{Stability and convergence to steady-state}
 
@@ -873,7 +877,7 @@ lines and zig-zagging behaviour for higher $m$ \cite{mitsoulis2001flow}.
 
 \subsubsection{Spatial discretization}
 
-Equation \eqref{eq:binghamPDE} is no longer on the form which produces a
+Equation \eqref{eq:binghamPDE} is no longer of the form which produces a
 checkerboard pattern upon spatial discretization, so there is no longer need
 for a staggered grid. We therefore use a standard, colocated grid for $u$, $v$
 and $p$ and discretize as before with finite volumes. For each control volume,
@@ -885,7 +889,8 @@ Eq.\ \eqref{eq:binghamPDE} in integral form can be written
     \label{eq:binghamFVM}
 \end{equation}
 %
-Discretizing the first component of the pressure term in Eq.\ is trivial: 
+Discretizing the first component of the pressure term in Eq.\
+\eqref{eq:binghamFVM} is trivial: 
 
 \begin{equation}
     \int_{\partial \Omega_{i,j}} p {\rm d}\bm{S} \cdot \bm{e}_x \approx
@@ -1082,7 +1087,7 @@ which works (at least) up to $N=129$, ${\rm Re}=3200$.
 \subsection{Transient behaviour}
 \label{subsec:transient}
 
-In order to investigate how the impusively started system evolves to
+In order to investigate how the impulsively started system evolves to
 steady-state, we initiated a test case with ${\rm Re=200}$ and $N=129$,
 outputing the system state at even intervals. Figure \ref{fig:transient} shows
 the state of the system at four different times through plots of the stream
@@ -1165,8 +1170,7 @@ velocity vectors are parallel to the stream lines, as expected.
 \subsection{Steady-state solution}
 \label{subsec:steady}
 
-Although it is well and good to see results which we deem reasonable
-intuitively, known reference solutions are necessary to validate the code. As
+Known reference solutions are also necessary to validate the code. As
 such, we compare our findings with those of Ghia et al.\ \cite{ghia1982high},
 since their paper is widely recognized as the reference for high-Re
 incompressible flow in the lid-driven cavity test case. Results have been
@@ -1346,7 +1350,7 @@ selected places in the domain is merely to give an intuitive understanding of
 the distribution of flow. As the Reynolds number gets larger, we observe that
 the secondary eddies become more prominent, in agreement with our expectations
 from the literature. Figure \ref{fig:vorticity} depicts the vorticity
-distribution in the domain, including contours. Also here, our results are
+distribution in the domain, including contours. Our results are
 indistinguishable from the results as shown in Figure 4 in the reference
 \cite{ghia1982high}. 
 
@@ -1416,14 +1420,12 @@ only possible since the matrices are sparse block-tridiagonal in nature.
 \label{sec:further}
 
 The most obvious next step is to implement the SIMPLE algorithm for solving the
-steady-state Navier-Stokes equations for Bingham plastics. Although the main
-considerations necessary to take have been outlined in Subsection
-\ref{subsec:bingham}, implementation of SIMPLE and its extensions is not
-necessarily trivial, especially if trying to do so in a computationally
-optimal manner taking advantage of preconditioners and utilizing multigrid
+steady-state Navier-Stokes equations for Bingham plastics. This implementation
+is not necessarily trivial, especially if trying to do so in a computationally
+optimal manner, taking advantage of preconditioners and utilizing multigrid
 methods. It would also be very interesting to try and develop a transient
 solver of the same type as we have implemented for the Newtonian case,
-following the idea of semi-implicitly temporal discretization of the viscuous
+following the idea of semi-implicit temporal discretization of the viscuous
 term. 
 
 For high Reynolds numbers, use of the time-marching PDE solver becomes a very
@@ -1443,23 +1445,22 @@ We have not utilized proper vectorization when updating the load vectors for
 the linear systems, but instead calculated each component individually. This
 could perhaps reduce the time spent in each time step marginally, but the main
 computational effort is in solving the linear systems of equations. It would be
-difficult to improve improve on the actual solvers provided by the Eigen
+difficult to improve on the actual solvers provided by the Eigen
 library (which, as we have seen, provide near-linear solving), but inspection
 of the (block) tridiagonal matrices make it apparent that they could be
 suitable for variants of the Hockney algorithm \cite{hockney1965fast}, which
-decouples the system of equations to $N$ diagonal systems, easily solved
-rapidly (in $\mathcal{O}(N)$ operations) by utilizing the discrete Fourier
-transform. Even further improvement could be possible by noting that the
-decoupled systems of equations enable parallelization. Thus, in theory, the
-computational complexity of the calculations performed in each time step could
-be reduced down towards $\mathcal{O}(N)$. 
+decouples the system of equations to $N$ diagonal systems, each easily solved
+rapidly (in $\mathcal{O}(N)$ operations). By utilizing the fast Fourier
+transform, the total computational complexity can be reduced to $\mathcal{O}(N
+\log N)$. Even further improvement could be possible by noting that the
+decoupled systems of equations enable parallelization. 
 
-Finally, there are natural extensions to provide in terms of how interesting
+Finally, steps should be taken to increase the amount of interesting
 systems we can look at. Inclusion of arbitrarily shaped domains can be done by
 using adaptive mesh refinement \cite{schoch2013eulerian, lovett2015adaptive}
 coupled with e.g.\ level set and ghost fluid methods \cite{schoch2013eulerian}
 or Cartesian cut cells \cite{klein2009well}, which would also allow for moving
-boundaries.  Additionally, extensions to three dimensions would be beneficial. 
+boundaries.  Additionally, extensions to three dimensions would be natural. 
 
 \section{Conclusions}
 \label{sec:conclusion}
@@ -1468,14 +1469,14 @@ We have successfully implemented a numerical solver for Newtonian fluids
 obeying the unsteady, incompressible Navier-Stokes equations in two spatial
 dimensions. Our results for the benchmark problem of a lid-driven cavity are in
 agreement with those previously presented in the literature for Reynolds
-numbers at least up to 3200, although computations converges slower and become
-more computationally expensive quickly as Re increases.  In addition to this
-implementation, we have discussed possible extensions to the special class of
-Non-Newtonian fluilds known as Bingham plastics in the case of
-Reynolds number zero (creeping flow). There is nothing novel about the methods
-employed and the resulting code, but this project report nevertheless serves as
-a literature review which covers an introduction to the problem at hand, and
-which validates the robustness of our code through well-documented tests. 
+numbers at least up to 3200, although computations converge slower and become
+more expensive quickly as Re increases.  In addition to this implementation, we
+have discussed possible extensions to the special class of Non-Newtonian
+fluilds known as Bingham plastics in the case of Reynolds number zero (creeping
+flow). There is nothing novel about the methods employed and the resulting
+code, but this project report nevertheless serves as a literature review which
+covers an introduction to the problem at hand, and which validates the
+robustness of our code through well-documented tests. 
 
 \section*{References}
 \bibliographystyle{elsarticle-num}
