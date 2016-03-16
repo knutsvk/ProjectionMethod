@@ -976,11 +976,9 @@ equations has been demonstrated in the literature \cite{syrakos2013solution}.
 \section{Results}
 \label{sec:results}
 
-All results presented in this Section are generated using the implemented
-scheme described in Subsection \ref{subsec:newtonian}, run on a laptop with an
-Intel Core i7 CPU \@ 2.50 GHz $\times$ 4 and 16 GB RAM running Linux ubuntu
-12.04 LTS. The velocity of the lid is taken to be $a=1.0$, while the tolerance
-required for convergence to steady-state is set to $\epsilon=10^{-5}$. 
+For all results presented in this Section, the velocity of the lid is taken to
+be $a=1.0$, while the tolerance required for convergence to steady-state is set
+to $\epsilon=10^{-5}$. 
 
 \subsection{Analysis of time step size}
 \label{subsec:timeStep}
@@ -1445,15 +1443,18 @@ We have not utilized proper vectorization when updating the load vectors for
 the linear systems, but instead calculated each component individually. This
 could perhaps reduce the time spent in each time step marginally, but the main
 computational effort is in solving the linear systems of equations. It would be
-difficult to improve on the actual solvers provided by the Eigen
-library (which, as we have seen, provide near-linear solving), but inspection
-of the (block) tridiagonal matrices make it apparent that they could be
-suitable for variants of the Hockney algorithm \cite{hockney1965fast}, which
-decouples the system of equations to $N$ diagonal systems, each easily solved
-rapidly (in $\mathcal{O}(N)$ operations). By utilizing the fast Fourier
-transform, the total computational complexity can be reduced to $\mathcal{O}(N
-\log N)$. Even further improvement could be possible by noting that the
-decoupled systems of equations enable parallelization. 
+difficult to improve on the actual solvers provided by the Eigen library
+(which, as we have seen, provide near-linear solving), but inspection of the
+(block) tridiagonal matrices make it apparent that they could be suitable for
+variants of the Hockney algorithm \cite{hockney1965fast}, which decouples the
+system of equations to $N$ diagonal systems, each easily solved rapidly (in
+$\mathcal{O}(N)$ operations). The runtime would then be dominated by $N$ matrix
+multiplications, each of the order $\mathcal{O}(N^2)$.  By utilizing the fast
+Fourier transform \cite{cooley1965algorithm}, the computational complexity can
+be reduced to $\mathcal{O}(N \log N)$ for each of these. Even further
+improvement could be possible by noting that the decoupled systems of equations
+enable parallelization, meaning that in theory, with optimal paralellization,
+the total complexity could be reduced down towards $\mathcal{O}(N \log N)$. 
 
 Finally, steps should be taken to increase the amount of interesting
 systems we can look at. Inclusion of arbitrarily shaped domains can be done by
