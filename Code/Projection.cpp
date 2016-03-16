@@ -1,7 +1,3 @@
-/* This program :
- *
- * */
-
 #include "Functions.h"
 
 int main(int argc, char* argv[]) 
@@ -21,7 +17,7 @@ int main(int argc, char* argv[])
         N = atoi(argv[1]);      // Number of cells per direction
         Re = atof(argv[2]);     // Reynolds number
     }
-    if(N==20) N=21;             //TODO: FInd out why N=20 doesnt
+    if(N==20) N=21;      
 
     int i, j;                   // Counters for loops
     double a = 1.0;             // Velocity of lid
@@ -130,7 +126,7 @@ int main(int argc, char* argv[])
     cout << "Printing results to file... " << endl; 
 
     // Print results to file
-/*
+
     sprintf(filename, "../Results/psi_N%d_Re%d.out", N, int(Re));
     fs.open(filename, std::fstream::out);
     for(i=0; i<N-1; i++)
@@ -199,7 +195,7 @@ int main(int argc, char* argv[])
         }
     }
     fs.close(); 
-*/
+
     cout << "All done. Total runtime: " 
         << double(clock() - initiationStart) / CLOCKS_PER_SEC 
         << " seconds. " << endl; 
