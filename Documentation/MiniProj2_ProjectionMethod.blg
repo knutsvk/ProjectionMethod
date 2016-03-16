@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: MiniProj2_ProjectionMethod.aux
+The style file: elsarticle-num.bst
+Database file #1: references.bib.bib
+You've used 32 entries,
+            2937 wiz_defined-function locations,
+            882 strings with 10971 characters,
+and the built_in function-call counts, 9145 in all, are:
+= -- 928
+> -- 254
+< -- 0
++ -- 106
+- -- 74
+* -- 679
+:= -- 1270
+add.period$ -- 32
+call.type$ -- 32
+change.case$ -- 31
+chr.to.int$ -- 0
+cite$ -- 32
+duplicate$ -- 241
+empty$ -- 1006
+format.name$ -- 94
+if$ -- 2312
+int.to.chr$ -- 0
+int.to.str$ -- 32
+missing$ -- 32
+newline$ -- 104
+num.names$ -- 32
+pop$ -- 160
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 544
+stack$ -- 0
+substring$ -- 734
+swap$ -- 30
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 0
+while$ -- 90
+width$ -- 34
+write$ -- 261
