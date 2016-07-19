@@ -17,33 +17,32 @@ int main(int argc, char* argv[])
 
     int i, j;                   // Counters for loops
     double Re = 30.0 / 2.0e-4;  // Reynolds number
-    double dx = 1.0/N;          // Grid spacing
+    double dx = 1.0 / N;          // Grid spacing
     double t = 0.0;             // Time counter
-    double dt = 500*dx/Re;      // Time step
-    double tStop = 2.0;
-    if(Re>1000) dt /= 5.0;      // Ensure clock step is small enough for high-Re
+    double dt = 100 * dx / Re;      // Time step
+    double tStop = 1.8;
 
     ofstream fs;           // File stream for writing res
     char filename[50];
 
-    cout << "Incompressible flow in a lid-driven cavity." << endl
+    cout << "Incompressible flow in a double shear layer." << endl
         << "Runtime parameters: N = " << N << ", Re = " << Re 
         << endl << "Building matrices... " << endl; 
 
     clock_t initiationStart = clock(); 
 
     // Initiate solution vectors
-    VectorXd u = VectorXd::Zero(N*(N-1));
-    VectorXd v = VectorXd::Zero(N*(N-1));
-    VectorXd p(N*N);
+    VectorXd u = doubleShearLayer(N);
+    VectorXd v = smallPerturbation(N);
+    VectorXd p = VectorXd::Ones(N*N);
 
     // Initiate intermediate velocity vectors
-    VectorXd U = VectorXd::Zero(N*(N-1));
-    VectorXd V = VectorXd::Zero(N*(N-1));
+    VectorXd U = doubleShearLayer(N);
+    VectorXd V = smallPerturbation(N);
 
     // Declare load vectors 
-    VectorXd f_U(N*(N-1));
-    VectorXd f_V(N*(N-1));
+    VectorXd f_U(N*N);
+    VectorXd f_V(N*N);
     VectorXd f_p(N*N);
 
     // TODO: Make the matrices sparse from beginning
@@ -60,12 +59,6 @@ int main(int argc, char* argv[])
     SimplicialLDLT<SparseMatrix<double> > solver_p;
     solver_p.compute(Sp_A_p);
 
-    // Build matrix for pressure equations, get solver
-    MatrixXd A_psi = buildStreamMatrix(N-1); 
-    SparseMatrix<double> Sp_A_psi = A_psi.sparseView();
-    SimplicialLDLT<SparseMatrix<double> > solver_psi;
-    solver_psi.compute(Sp_A_psi);
-
     clock_t initiationEnd = clock(); 
 
     cout << "Building of matrices complete. Time elapsed: " 
@@ -78,12 +71,14 @@ int main(int argc, char* argv[])
     int iter = 0;
     while(t < tStop)
     {
+        cout << "iter: " << iter << ", time = " << t << endl; 
+
         // Make sure we dont go past tStop
         if( t + dt > tStop )
             dt = tStop - t; 
 
         // Compute rhs for update formula for x-velocity
-        updateLoadU(u, v, N, dt, a, Re, f_U);
+        updateLoadU(u, v, N, dt, Re, f_U);
 
         // Solve Au * U = bu
         U = solver_UV.solve(f_U);
@@ -116,33 +111,19 @@ int main(int argc, char* argv[])
 
     // Calculate vorticity vector and stream function
     VectorXd omega = buildVorticityVector(u, v, N);
-    VectorXd psi = solver_psi.solve(omega);
 
     cout << "Printing results to file... " << endl; 
 
     // Print results to file
 
-    sprintf(filename, "../Results/psi_N%d.out", N);
-    fs.open(filename, std::fstream::out);
-    for(i=0; i<N-1; i++)
-    {
-        for(j=0; j<N-1; j++)
-        {
-            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
-                << psi[i*(N-1)+j] << "\n";
-        }
-        fs << "\n";
-    }
-    fs.close();
-
     sprintf(filename, "../Results/omega_N%d.out", N);
     fs.open(filename, std::fstream::out);
-    for(i=0; i<N-1; i++)
+    for(i=0; i<N; i++)
     {
-        for(j=0; j<N-1; j++)
+        for(j=0; j<N; j++)
         {
-            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
-                << omega[i*(N-1)+j] << "\n";
+            fs << i*dx << "\t" << j*dx << "\t" 
+                << omega[i*N+j] << "\n";
         }
         fs << "\n";
     }
@@ -181,11 +162,11 @@ int main(int argc, char* argv[])
     sprintf(filename, "../Results/vec_N%d.out", N);
     fs.open(filename, std::fstream::out);
     fs << "x\ty\tu\tv\n";
-    for(i=0; i<N-1; i++)
+    for(i=0; i<N; i++)
     {
-        for(j=0; j<N-1; j++)
+        for(j=0; j<N; j++)
         {
-            fs << (i+1)*dx << "\t" << (j+1)*dx << "\t" 
+            fs << i*dx << "\t" << j*dx << "\t" 
                 << u[i*N+j] << "\t" << v[j*N+i] << "\n";
         }
     }

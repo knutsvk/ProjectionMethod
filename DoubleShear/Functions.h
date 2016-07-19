@@ -11,10 +11,12 @@
 using namespace std; 
 using namespace Eigen;
 
+VectorXd doubleShearLayer(int N);
+VectorXd smallPerturbation(int N);
 MatrixXd buildVelocityMatrix(int N, double dt, double Re);
 MatrixXd buildPressureMatrix(int N);
 void updateLoadU(VectorXd u, VectorXd v, int N, double dt, 
-        double a, double Re, VectorXd &f_U);
+        double Re, VectorXd &f_U);
 void updateLoadV(VectorXd u, VectorXd v, int N, double dt, 
         double Re, VectorXd &f_V);
 void updateLoadp(VectorXd U, VectorXd V, int N, double dt, 
@@ -22,6 +24,5 @@ void updateLoadp(VectorXd U, VectorXd V, int N, double dt,
 void updateVelocities(VectorXd U, VectorXd V, VectorXd p, 
         int N, double dt, VectorXd &u, VectorXd &v);
 VectorXd buildVorticityVector(VectorXd u, VectorXd v, int N);
-MatrixXd buildStreamMatrix(int N);
 
 #endif
