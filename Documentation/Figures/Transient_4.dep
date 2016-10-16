@@ -1,3 +1,0 @@
-Figures/Transient_4.pdf: Figures/Transient_4_contourtmp0.table
-Figures/Transient_4.pdf: ../Results/vec_N129_Re200_4.out
-Figures/Transient_4.pdf: ../Results/vec_N129_Re200_4.out

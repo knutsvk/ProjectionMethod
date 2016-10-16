@@ -1,1 +1,0 @@
-unset surface; set cntrparam levels discrete -1e-10, -1e-7, -1e-5, -1e-4, -.01, -.03, -.05, -.07, -.09, -.1, -.11, -.115, -.1175, 1e-8, 1e-7, 1e-6, 1e-5, 5e-5, 1e-4, 2.5e-4, 5e-4, 1e-3, 1.5e-3, 3e-3; set contour; set table "Figures/Stream_Re3200_contourtmp0.table"; splot "Figures/Stream_Re3200_contourtmp0.dat";
