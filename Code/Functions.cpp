@@ -143,9 +143,11 @@ void updateLoadU(VectorXd u, VectorXd v, int N, double dt,
             }
           
             // compute load vector
-            f_U[i*N+j] = u_0-alpha*(
+/*            f_U[i*N+j] = u_0-alpha*(
                     u_0*(u_E-u_W)+0.5*u_0*(v_NW+v_NE-v_SW-v_SE)
-                    +0.125*(u_N-u_S)*(v_NW+v_NE+v_SE+v_SW));
+                    +0.125*(u_N-u_S)*(v_NW+v_NE+v_SE+v_SW));*/
+            f_U[i*N+j] = u_0-0.5*alpha*(
+                    u_0*(u_E-u_W) +0.25*(u_N-u_S)*(v_NW+v_NE+v_SE+v_SW));
             
             // add BCs from viscosiy term as appropriate
             // if on north or south boundary
@@ -223,9 +225,11 @@ void updateLoadV(VectorXd u, VectorXd v, int N, double dt,
             }
           
             // compute load vector
-            f_V[i*N+j] = v_0-alpha*(
+/*            f_V[i*N+j] = v_0-alpha*(
                     v_0*(v_N-v_S)+0.5*v_0*(u_NE+u_SE-u_NW-u_SW)
-                    +0.125*(v_E-v_W)*(u_NW+u_NE+u_SE+u_SW));
+                    +0.125*(v_E-v_W)*(u_NW+u_NE+u_SE+u_SW));*/
+            f_V[i*N+j] = v_0-0.5*alpha*(
+                    v_0*(v_N-v_S) +0.25*(v_E-v_W)*(u_NW+u_NE+u_SE+u_SW));
 
             // add BCs from viscosiy term as appropriate
             // if on east or west boundary
