@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     if(N==20) N=21;      
 
     int i, j;                   // Counters for loops
-    double Re = 30.0 / 2.0e-4;  // Reynolds number
+    double Re = 1.0 / 2.0e-4;  // Reynolds number
     double dx = 1.0 / N;          // Grid spacing
     double t = 0.0;             // Time counter
     double dt = 100 * dx / Re;      // Time step
