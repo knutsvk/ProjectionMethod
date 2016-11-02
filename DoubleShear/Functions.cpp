@@ -54,6 +54,8 @@ MatrixXd buildVelocityMatrix(int N, double dt, double Re)
     B.diagonal() = alpha*VectorXd::Ones(N);
     B.diagonal(1) = beta*VectorXd::Ones(N-1);
     B.diagonal(-1) = beta*VectorXd::Ones(N-1);
+    B(0,N-1) = beta;
+    B(N-1,0) = beta;
 
     // Build the diagonal matrix which is on the subdiagonals
     MatrixXd C = MatrixXd::Zero(N,N);
@@ -64,9 +66,13 @@ MatrixXd buildVelocityMatrix(int N, double dt, double Re)
     for(int i=0; i<N; i++)
     {
         A.block(i*N,i*N,N,N) = B;
-        if(i>0)
+        if(i==0)
+            A.block((N-1)*N,i*N,N,N) = C;
+        else
             A.block((i-1)*N,i*N,N,N) = C;
-        if(i<N-1)
+        if(i==N-1)
+            A.block(0,i*N,N,N) = C;
+        else
             A.block((i+1)*N,i*N,N,N) = C;
     }
 
@@ -85,10 +91,10 @@ MatrixXd buildPressureMatrix(int N)
     // block on the diagonal of A 
     MatrixXd B = MatrixXd::Zero(N,N);
     B.diagonal() = -4*VectorXd::Ones(N);
-    B(0,0) = -3;
-    B(N-1,N-1) = -3;
     B.diagonal(1) = VectorXd::Ones(N-1);
     B.diagonal(-1) = VectorXd::Ones(N-1);
+    B(0,N-1) = 1;
+    B(N-1,0) = 1;
 
     // Build the diagonal matrix which is on the subdiagonals
     MatrixXd C = MatrixXd::Identity(N,N);
@@ -99,11 +105,11 @@ MatrixXd buildPressureMatrix(int N)
     {
         A.block(i*N,i*N,N,N) = B;
         if(i==0)
-            A.block(i*N,i*N,N,N) += C;
+            A.block((N-1)*N,i*N,N,N) = C;
         else 
             A.block((i-1)*N,i*N,N,N) = C;
         if(i==N-1)
-            A.block(i*N,i*N,N,N) += C;
+            A.block(0,i*N,N,N) = C;
         else
             A.block((i+1)*N,i*N,N,N) = C;
     }
